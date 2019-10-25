@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Bezier.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\BezierPatch.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\BezierWarper.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\LinearPatch.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\LinearWarper.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Mapper.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Mask.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\ResolumeLoader.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Screen.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Slice.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\SoftEdge.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\WarpHandle.cpp">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons">
+			<UniqueIdentifier>{71834F65-F3A9-211E-73B8-DC85}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxMapper">
+			<UniqueIdentifier>{D0CCCC60-CEA5-16B5-8DD4-1AFD}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxMapper\src">
+			<UniqueIdentifier>{FCB03E29-4703-1930-912B-D5F1}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxMapper\libs">
+			<UniqueIdentifier>{2EACDA12-1384-7A24-E32A-622F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxMapper\libs\ofxMapper">
+			<UniqueIdentifier>{F2AF8821-DD6C-EBE1-A5D5-80D7}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxMapper\libs\ofxMapper\src">
+			<UniqueIdentifier>{6F221CAD-2A5F-9F49-90FD-3FD5}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\src\ofxMapper.h">
+			<Filter>addons\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Bezier.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\BezierPatch.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\BezierWarper.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\LinearPatch.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\LinearShader.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\LinearWarper.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Mapper.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Mask.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\ResolumeLoader.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Screen.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Slice.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\SoftEdge.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\Warper.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\WarpHandle.h">
+			<Filter>addons\ofxMapper\libs\ofxMapper\src</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ResourceCompile Include="icon.rc" />
+	</ItemGroup>
+</Project>
