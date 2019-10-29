@@ -12,7 +12,8 @@ public:
     void setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight);
 
     void update();
-    void updateTexCoords();
+	void updateHandles();
+	void updateTexCoords();
 
     void drawGrid();
     void drawSubGrid();
@@ -22,7 +23,8 @@ public:
 
     bool select(const glm::vec2 & p);
 
-	void moveVertex(size_t gridCol, size_t gridRow, const glm::vec2 & delta);
+	void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
+	void notifyHandles();
 
 private:
     void makeOutline();

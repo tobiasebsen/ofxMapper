@@ -31,13 +31,19 @@ public:
 	bool selectWarper(const glm::vec2 & p);
 
 
+	Warper * getWarper();
+
+
 	// Handles
-	void updateHandles();
-	vector<WarpHandle> & getHandles();
-    bool selectHandle(const glm::vec2 & p, float radius);
-    bool grabHandle(const glm::vec2 & p, float radius);
-    void dragHandle(const glm::vec2 & delta);
-    void releaseHandle();
+	//void updateHandles();
+	/*size_t getNumHandles() const;
+	DragHandle * getHandle(size_t);
+	const DragHandle * getHandle(size_t) const;
+	bool selectHandle(const glm::vec2 & p, float radius);
+	bool grabHandle(const glm::vec2 & p, float radius);
+	bool dragHandle(const glm::vec2 & delta) = 0;
+	void releaseHandle() = 0;*/
+	//void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
     
     
 	// Bland rects
@@ -78,7 +84,7 @@ private:
 
 	size_t gridCols;
 	size_t gridRows;
-	vector<WarpHandle> handles;
+	//vector<WarpHandle> handles;
 
 	Warper * warper;
 	BezierWarper bezierWarper;

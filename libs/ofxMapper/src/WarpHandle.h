@@ -1,54 +1,17 @@
 #pragma once
 
 #include "ofMain.h"
+#include "DragHandle.h"
 
-/*class WarpHandle;
-
-class WarpControl {
+class WarpHandle : public DragHandle {
 public:
 
-	WarpHandle * handle = NULL;
+	int vertexIndex = -1;
+	int x = -1;
+	int y = -1;
+	bool isControl = false;
 
-	glm::vec2 * position = NULL;
-
-	bool selected = false;
-	bool dragging = false;
-};*/
-
-
-class WarpHandle {
-public:
-	/*WarpHandle();
-
-	glm::vec2 getPosition() {
-		return *position;
-	}
-	void setPosition(const glm::vec2 & p);
-	void movePosition(const glm::vec2 & delta);
-
-	void operator=(glm::vec2 & p) {
-		setPosition(p);
-	}
-	void operator+=(glm::vec2 & delta) {
-		movePosition(delta);
-	}
-
-	glm::vec2 * position = NULL;
-
-	union {
-		WarpControl controls[4];
-		struct {
-			WarpControl controlRight;
-			WarpControl controlDown;
-			WarpControl controlLeft;
-			WarpControl controlUp;
-		};
-	};*/
-	glm::vec2 position;
-	size_t vertexIndex;
-	size_t gridCol = 0;
-	size_t gridRow = 0;
-	bool selected = false;
-	bool dragging = false;
+	//size_t gridCol = 0;
+	//size_t gridRow = 0;
 };
 

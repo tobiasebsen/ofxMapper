@@ -23,6 +23,7 @@ public:
 	void setInputRect(shared_ptr<ofRectangle> inputRect);
 
 	void update();
+	void updateHandles();
 	void updateTexCoords();
 
 	void drawGrid();
@@ -33,7 +34,9 @@ public:
     
     bool select(const glm::vec2 & p);
 
-	void moveVertex(size_t gridCol, size_t gridRow, const glm::vec2 & delta) {}
+	void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
+	void notifyHandles();
+
 
 	ofParameter<int> bezierResolution = {"Bezier resolution", 20, 0, 40};
 	ofParameter<int> subdivCols = { "Subdivide horizontal", 20, 0, 40 };

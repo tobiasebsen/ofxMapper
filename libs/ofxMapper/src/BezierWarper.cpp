@@ -28,6 +28,7 @@ void BezierWarper::setVertices(shared_ptr<glm::vec2> vertices, int controlWidth,
 	cols = (controlWidth - 1) / 3;
 
 	update();
+	updateHandles();
     updateTexCoords();
 }
 
@@ -66,6 +67,35 @@ void BezierWarper::update() {
 
 	makeOutline();
 	makeSubdiv(); // -> makeMesh();
+}
+
+//--------------------------------------------------------------
+void BezierWarper::updateHandles() {
+	size_t gridCols = (controlWidth - 1) / 3 + 1;
+	size_t gridRows = (controlHeight - 1) / 3 + 1;
+
+	handles.resize(controlWidth * controlHeight);
+
+	glm::vec2 * v = vertices.get();
+
+	size_t rowIndex = 0;
+	for (size_t r = 0; r < controlHeight; r++) {
+		for (size_t c = 0; c < controlWidth; c++) {
+			WarpHandle & handle = handles[rowIndex + c];
+
+			handle.vertexIndex = r * controlWidth + c;
+			handle.position = v[handle.vertexIndex];
+
+			//handle.gridCol = c;
+			//handle.gridRow = r;
+			handle.x = c;
+			handle.y = r;
+			handle.selected = false;
+			handle.dragging = false;
+			handle.isControl = (c % 3) || (r % 3);
+		}
+		rowIndex += controlWidth;
+	}
 }
 
 //--------------------------------------------------------------
@@ -266,6 +296,19 @@ void BezierWarper::drawBeziers(vector<Bezier> & beziers) {
 bool BezierWarper::select(const glm::vec2 & p) {
 	return outline.size() && outline.inside(ofPoint(p));
 }
+
+//--------------------------------------------------------------
+
+void BezierWarper::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
+	glm::vec2 * v = vertices.get();
+	handle.position = (v[handle.vertexIndex] += delta);
+}
+
+//--------------------------------------------------------------
+void BezierWarper::notifyHandles() {
+	update();
+}
+
 
 //--------------------------------------------------------------
 /*PatchJunction BezierWarper::getHandlePatches(BezierHandle & handle) {

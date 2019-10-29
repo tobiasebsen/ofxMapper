@@ -27,6 +27,7 @@ namespace ofxMapper {
 
 
 		// File
+
 		bool load(string filePath);
 		string getFileName() const;
 
@@ -35,8 +36,8 @@ namespace ofxMapper {
 
 		void drawComp();
 		void setCompSize(size_t width, size_t height);
-		ofFbo & getCompFbo();
 		ofRectangle getCompRect() const;
+		ofFbo & getFbo();
 
 
 		// Screens
@@ -60,32 +61,15 @@ namespace ofxMapper {
 		void updateBlendRects();
 		void drawBlendRects();
 
-		// Handles
-		//void handleSelect(size_t screenIndex, const glm::vec2 & p, float radius);
-		void dragHandle(glm::vec2 & delta);
-		void releaseHandle();
-
-
-		// Control points
-		bool controlSelect(size_t screenIndex, const glm::vec2 & p, float radius);
-		void contolRelease();
-		void controlDrag(glm::vec2 & delta);
-
-
-		// Masks
-		//bool maskSelect(size_t screenIndex, const glm::vec2 & p);
-
 	private:
 		ofRectangle compRect;
 
 		string compFileName = "untitled.xml";
 
-		// Frame buffers
-		ofFbo compFbo;
+		// Frame buffer
+		ofFbo fbo;
 
 		vector<ScreenPtr> screens;
-		vector<SlicePtr> selectedSlices;
-		vector<WarpHandle> selectedHandles;
 	};
 
 }

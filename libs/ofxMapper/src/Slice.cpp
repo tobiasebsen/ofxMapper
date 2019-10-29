@@ -57,7 +57,8 @@ void Slice::setVertices(vector<glm::vec2>& vertices, size_t controlWidth, size_t
 	linearWarper.setVertices(this->vertices, controlWidth, controlHeight);
     bezierWarper.setVertices(this->vertices, controlWidth, controlHeight);
 
-	updateHandles();
+	//linearWarper.updateHandles();
+	//bezierWarper.updateHandles();
 }
 
 void Slice::createVertices(const ofRectangle & rect) {
@@ -82,7 +83,8 @@ void Slice::createVertices(const ofRectangle & rect) {
 	linearWarper.setVertices(this->vertices, controlWidth, controlHeight);
 	bezierWarper.setVertices(this->vertices, controlWidth, controlHeight);
 
-	updateHandles();
+	//linearWarper.updateHandles();
+	//bezierWarper.updateHandles();
 }
 
 void Slice::update() {
@@ -128,8 +130,13 @@ bool Slice::selectWarper(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
-void Slice::updateHandles() {
-	gridCols = (controlWidth - 1) / 3 + 1;
+Warper * Slice::getWarper() {
+	return warper;
+}
+
+//--------------------------------------------------------------
+//void Slice::updateHandles() {
+	/*gridCols = (controlWidth - 1) / 3 + 1;
 	gridRows = (controlHeight - 1) / 3 + 1;
 
 	handles.resize(gridCols * gridRows);
@@ -144,78 +151,19 @@ void Slice::updateHandles() {
 			handle.vertexIndex = r * controlWidth * 3 + c * 3;
 			handle.position = v[handle.vertexIndex];
 
-			/*handle.position = v + (r * controlWidth * 3) + (c * 3);
-
-			if (c < gridCols-1)
-				handle.controlRight.position = handle.position + 1;
-			if (r < gridRows-1)
-				handle.controlDown.position = handle.position + controlWidth;
-
-			if (c > 0)
-				handle.controlLeft.position = handle.position - 1;
-			if (r > 0)
-				handle.controlUp.position = handle.position - controlWidth;*/
-
-			handle.gridCol = c;
-			handle.gridRow = r;
+			//handle.gridCol = c;
+			//handle.gridRow = r;
 			handle.selected = false;
 			handle.dragging = false;
 		}
 		rowIndex += gridCols;
-	}
-}
+	}*/
+//}
 
 //--------------------------------------------------------------
-vector<WarpHandle> & Slice::getHandles() {
-	return handles;
-}
-
-//--------------------------------------------------------------
-bool Slice::selectHandle(const glm::vec2 & p, float radius) {
-    bool selected = false;
-    for (WarpHandle & h : handles) {
-        if (glm::distance(p, h.position) < radius)
-            selected = true;
-    }
-    return selected;
-}
-
-//--------------------------------------------------------------
-bool Slice::grabHandle(const glm::vec2 & p, float radius) {
-    bool grabbed = false;
-    for (WarpHandle & h : handles) {
-        if (glm::distance(p, h.position) < radius) {
-			grabbed = true;
-            h.selected = true;
-            h.dragging = true;
-        }
-		else {
-			h.selected = false;
-			h.dragging = false;
-		}
-    }
-    return grabbed;
-}
-
-//--------------------------------------------------------------
-void Slice::dragHandle(const glm::vec2 & delta) {
-    for (WarpHandle & h : handles) {
-        if (h.dragging) {
-            //h.movePosition(delta);
-			warper->moveVertex(h.gridCol, h.gridRow, delta);
-			h.position += delta;
-        }
-    }
-}
-
-//--------------------------------------------------------------
-void Slice::releaseHandle() {
-    for (WarpHandle & h : handles) {
-        if (h.dragging) {
-            h.dragging = false;
-        }
-    }
-}
+/*void Slice::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
+	warper->moveHandle(handle, delta);
+}*/
 
 //--------------------------------------------------------------
 void Slice::clearBlendRects() {

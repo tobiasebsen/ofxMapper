@@ -15,14 +15,14 @@ void Mapper::setup(int width, int height) {
 
 //--------------------------------------------------------------
 void Mapper::begin() {
-	compFbo.begin();
+	fbo.begin();
 }
 
 //--------------------------------------------------------------
 void Mapper::end() {
-	compFbo.end();
+	fbo.end();
 
-	update(compFbo.getTexture());
+	update(fbo.getTexture());
 }
 
 //--------------------------------------------------------------
@@ -47,7 +47,7 @@ void Mapper::draw() {
 
 //--------------------------------------------------------------
 void Mapper::drawComp() {
-	compFbo.draw(0, 0);
+	fbo.draw(0, 0);
 }
 
 //--------------------------------------------------------------
@@ -78,13 +78,13 @@ void Mapper::drawInputRectsSelected(bool drawDisabled) {
 
 //--------------------------------------------------------------
 void Mapper::setCompSize(size_t width, size_t height) {
-	compFbo.allocate(width, height, GL_RGB);
+	fbo.allocate(width, height, GL_RGB);
 	compRect.set(0, 0, width, height);
 }
 
 //--------------------------------------------------------------
-ofFbo & Mapper::getCompFbo() {
-	return compFbo;
+ofFbo & Mapper::getFbo() {
+	return fbo;
 }
 
 //--------------------------------------------------------------
@@ -214,20 +214,6 @@ void Mapper::drawBlendRects() {
             }
         }
     }
-}
-
-//--------------------------------------------------------------
-void Mapper::dragHandle(glm::vec2 & delta) {
-	for (ScreenPtr & screen : screens) {
-		screen->dragHandle(delta);
-	}
-}
-
-//--------------------------------------------------------------
-void Mapper::releaseHandle() {
-	for (ScreenPtr & screen : screens) {
-		screen->releaseHandle();
-	}
 }
 
 //--------------------------------------------------------------
