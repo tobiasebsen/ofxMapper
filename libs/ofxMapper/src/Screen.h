@@ -17,6 +17,8 @@ public:
 	void draw();
 	void draw(const ofRectangle & rect);
 
+	const ofFbo & getFbo() const;
+
     // Slices
     vector<SlicePtr> & getSlices();
 	size_t getNumSlices() const;
@@ -45,14 +47,16 @@ public:
 	ofParameter<string> name = { "Name:", "" };
 	ofParameter<int> width = { "Width", 1920, 320, 3840 };
 	ofParameter<int> height = { "Height", 1920, 320, 3840 };
+	ofParameter<float> keystoneH = { "Keystone H", 0, -10, 10 };
+	ofParameter<float> keystoneV = { "Keystone V", 0, -10, 10 };
 	ofParameter<bool> enabled = { "Enabled", true };
 	ofParameter<bool> remove = { "Remove", false };
 	ofParameterGroup group = { "Screen" , name, width, height, enabled, remove };
-	ofFbo fbo;
 
 	void resolutionChanged(int &);
 
 private:
+	ofFbo fbo;
 	vector<SlicePtr> slices;
     vector<MaskPtr> masks;
 };

@@ -59,6 +59,10 @@ void Screen::draw(const ofRectangle & rect) {
 	fbo.draw(rect);
 }
 
+const ofFbo & Screen::getFbo() const {
+	return fbo;
+}
+
 //--------------------------------------------------------------
 vector<SlicePtr> & Screen::getSlices() {
     return slices;

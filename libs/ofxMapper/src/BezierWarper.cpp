@@ -29,7 +29,6 @@ void BezierWarper::setVertices(shared_ptr<glm::vec2> vertices, int controlWidth,
 
 	update();
 	updateHandles();
-    updateTexCoords();
 }
 
 //--------------------------------------------------------------
@@ -116,8 +115,12 @@ void BezierWarper::makeSubdiv() {
             float d2 = glm::distance(v3, v4);
             float d3 = glm::distance(v1, v3);
             float d4 = glm::distance(v2, v4);
-            subdivRows.setWithoutEventNotifications(MAX(d1, d2) / adaptiveSubdivRes);
-            subdivCols.setWithoutEventNotifications(MAX(d3, d4) / adaptiveSubdivRes);
+			int sr = MAX(d1, d2) / adaptiveSubdivRes;
+			int sc = MAX(d3, d4) / adaptiveSubdivRes;
+			if (sr != subdivCols || sc != subdivRows) {
+				subdivRows.setWithoutEventNotifications(sr);
+				subdivCols.setWithoutEventNotifications(sc);
+			}
         }
     }
 
@@ -174,6 +177,8 @@ void BezierWarper::makeOutline() {
 
 //--------------------------------------------------------------
 void BezierWarper::makeMesh() {
+
+	int n = mesh.getNumVertices();
     mesh.clearVertices();
     mesh.clearIndices();
 	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
@@ -194,6 +199,9 @@ void BezierWarper::makeMesh() {
 			offsetIndex += patch.meshIndices(indices, offsetIndex);
 			mesh.addIndices(indices);
 		}
+	}
+	if (n != mesh.getNumVertices()) {
+		updateTexCoords();
 	}
 }
 
