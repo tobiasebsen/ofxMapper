@@ -5,10 +5,13 @@
 
 class Mask : public HasHandlesT<DragHandle> {
 public:
+    Mask();
 
+    void setScreenRect(const ofRectangle & rect);
     void setPoints(vector<glm::vec2> & points);
 
 	void update();
+    void updateMesh();
 
     void draw();
     void drawOutline();
@@ -21,14 +24,19 @@ public:
 	ofParameter<string> name = { "Name:", "" };
     ofParameter<bool> enabled = { "Enabled", true };
     ofParameter<bool> editEnabled = { "Edit", false };
+    ofParameter<bool> closed = { "Closed", true };
+    ofParameter<bool> inverted = { "Inverted", false };
     ofParameter<bool> remove = { "Remove", false };
-    ofParameterGroup group = { "Mask" , name, enabled, editEnabled, remove };
+    ofParameterGroup group = { "Mask" , name, enabled, editEnabled, closed, inverted, remove };
 
     ofParameter<bool> selected = { "Selected", false };
+    
+    void closedChanged(bool&);
+    void invertedChanged(bool&);
 
 private:
-	//vector<DragHandle> handles;
-    ofPolyline poly;
+    ofRectangle screenRect;
+    vector<ofPolyline> poly;
     ofMesh mesh;
 };
 

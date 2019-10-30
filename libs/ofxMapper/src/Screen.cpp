@@ -136,6 +136,7 @@ MaskPtr Screen::getMask(size_t maskIndex) {
 MaskPtr Screen::addMask(string name) {
     MaskPtr mask(new Mask);
     mask->name = name;
+    mask->setScreenRect(getScreenRect());
     masks.push_back(mask);
     return mask;
 }
@@ -220,4 +221,9 @@ void Screen::resolutionChanged(int &) {
 	fbo.begin();
 	ofClear(ofColor::black);
 	fbo.end();
+
+    ofRectangle screenRect = getScreenRect();
+    for (MaskPtr mask : masks) {
+        mask->setScreenRect(screenRect);
+    }
 }
