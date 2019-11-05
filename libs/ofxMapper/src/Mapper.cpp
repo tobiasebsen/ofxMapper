@@ -39,8 +39,10 @@ void Mapper::update(ofTexture & texture) {
 void Mapper::draw() {
 	ofPushMatrix();
 	for (auto & screen : screens) {
-		screen->draw();
-		ofTranslate(screen->width, 0);
+		if (screen->enabled) {
+			screen->draw();
+			ofTranslate(screen->width, 0);
+		}
 	}
 	ofPopMatrix();
 }
