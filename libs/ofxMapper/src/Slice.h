@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Element.h"
 #include "Warper.h"
 #include "WarpHandle.h"
 #include "BezierWarper.h"
@@ -8,7 +9,7 @@
 #include "SoftEdge.h"
 
 
-class Slice {
+class Slice : public Element {
 public:
 	Slice();
 	~Slice();
@@ -22,10 +23,11 @@ public:
 	void update();
 
 	// Draw
+	virtual void draw();
+	virtual void drawOutline();
 	void drawInputRect();
 	void drawGrid();
 	void drawSubGrid();
-	void drawMesh();
 
 	bool selectInput(const glm::vec2 & p);
 	bool selectWarper(const glm::vec2 & p);
@@ -56,19 +58,19 @@ public:
 	SoftEdgePtr getSoftEdge();
 
 
-	ofParameter<string> name = { "Name:", "" };
+	//ofParameter<string> name = { "Name:", "" };
 	ofParameter<int> inputX = { "X", 0, 0, 1920 };
 	ofParameter<int> inputY = { "Y", 0, 0, 1080 };
 	ofParameter<int> inputWidth = { "Width", 1920, 0, 1920 };
 	ofParameter<int> inputHeight = { "Height", 1080, 0, 1080 };
 	ofParameter<bool> softEdgeEnabled = { "Soft edge", false };
-	ofParameter<bool> enabled = { "Enabled", true };
-	ofParameter<bool> remove = { "Remove", false };
-	ofParameter<bool> selected = { "Selected", false };
+	//ofParameter<bool> enabled = { "Enabled", true };
+	//ofParameter<bool> remove = { "Remove", false };
+	//ofParameter<bool> selected = { "Selected", false };
 	ofParameter<bool> dragging = { "Dragging", false };
 	ofParameterGroup inputGroup = { "Slice", name, inputX, inputY, inputWidth, inputHeight, softEdgeEnabled, enabled, remove };
 
-    ofParameter<bool> editEnabled = { "Edit", false };
+    //ofParameter<bool> editEnabled = { "Edit", false };
 	ofParameter<bool> bezierEnabled = { "Bezier", false };
 	ofParameterGroup warperGroup = {"Warper", name, enabled, editEnabled, bezierEnabled, softEdgeEnabled };
 

@@ -30,7 +30,7 @@ void Screen::update(ofTexture & inputTexture) {
 
 	for (SlicePtr slice : slices) {
 		if (slice->enabled) {
-			slice->drawMesh();
+			slice->draw();
 		}
 	}
 
@@ -153,39 +153,48 @@ void Screen::deselectMasks() {
 }
 
 //--------------------------------------------------------------
-void Screen::grab(const glm::vec2 & p, float radius) {
-
-	for (MaskPtr mask : masks) {
-		if (mask->editEnabled && mask->grabHandle(p, radius)) {
-			mask->selected = true;
-			deselectSliceWarpers();
-			return;
-		}
-	}
+bool Screen::grabSlice(const glm::vec2 & p, float radius) {
 	bool selected = false;
-	for (MaskPtr mask : masks) {
-		if (mask->select(p)) {
-			selected = true;
-		}
-	}
-	if (selected) {
-		deselectSliceWarpers();
-		return;
-	}
-
 	for (SlicePtr slice : slices) {
 		Warper * warper = slice->getWarper();
 		if (slice->editEnabled && warper->grabHandle(p, radius)) {
 			slice->selected = true;
-			return;
+			return true;
 		}
 	}
-	selected = false;
 	for (SlicePtr slice : slices) {
 		if (slice->selectWarper(p)) {
 			selected = true;
 		}
 	}
+	return selected;
+}
+
+//--------------------------------------------------------------
+bool Screen::grabMask(const glm::vec2 & p, float radius) {
+	bool selected = false;
+	for (MaskPtr mask : masks) {
+		if (mask->editEnabled && mask->grabHandle(p, radius)) {
+			mask->selected = true;
+			return true;
+		}
+	}
+	for (MaskPtr mask : masks) {
+		if (mask->select(p)) {
+			selected = true;
+		}
+	}
+	return selected;
+}
+
+//--------------------------------------------------------------
+void Screen::grab(const glm::vec2 & p, float radius) {
+
+	if (grabMask(p, radius)) {
+		deselectSliceWarpers();
+		return;
+	}
+	grabSlice(p, radius);
 }
 
 //--------------------------------------------------------------

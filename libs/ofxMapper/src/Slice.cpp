@@ -110,11 +110,16 @@ void Slice::drawSubGrid() {
 }
 
 //--------------------------------------------------------------
-void Slice::drawMesh() {
+void Slice::draw() {
 	if (softEdgeEnabled)
 		warper->drawMesh(softEdge);
 	else
 		warper->drawMesh();
+}
+
+//--------------------------------------------------------------
+void Slice::drawOutline() {
+	warper->drawOutline();
 }
 
 //--------------------------------------------------------------

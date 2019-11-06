@@ -40,6 +40,9 @@ public:
     void removeMask(size_t maskIndex);
 
 
+	bool grabSlice(const glm::vec2 & p, float radius);
+	bool grabMask(const glm::vec2 & p, float radius);
+
 	void grab(const glm::vec2 & p, float radius);
 	void drag(const glm::vec2 & delta);
 	void release();
@@ -59,6 +62,8 @@ private:
 	ofFbo fbo;
 	vector<SlicePtr> slices;
     vector<MaskPtr> masks;
+
+	vector<ElementPtr> selectedElements;
 };
 
 typedef shared_ptr<Screen> ScreenPtr;

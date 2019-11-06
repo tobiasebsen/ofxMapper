@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Element.h"
 #include "DragHandle.h"
 
-class Mask : public HasHandlesT<DragHandle> {
+class Mask : public Element, public HasHandlesT<DragHandle> {
 public:
     Mask();
 
@@ -13,23 +14,23 @@ public:
 	void update();
     void updateMesh();
 
-    void draw();
-    void drawOutline();
+    virtual void draw();
+    virtual void drawOutline();
     
     bool select(const glm::vec2 & p);
   
 	void moveHandle(DragHandle & handle, const glm::vec2 & delta);
 	void notifyHandles();
 
-	ofParameter<string> name = { "Name:", "" };
-    ofParameter<bool> enabled = { "Enabled", true };
-    ofParameter<bool> editEnabled = { "Edit", false };
+	//ofParameter<string> name = { "Name:", "" };
+    //ofParameter<bool> enabled = { "Enabled", true };
+    //ofParameter<bool> editEnabled = { "Edit", false };
     ofParameter<bool> closed = { "Closed", true };
     ofParameter<bool> inverted = { "Inverted", false };
-    ofParameter<bool> remove = { "Remove", false };
+    //ofParameter<bool> remove = { "Remove", false };
     ofParameterGroup group = { "Mask" , name, enabled, editEnabled, closed, inverted, remove };
 
-    ofParameter<bool> selected = { "Selected", false };
+    //ofParameter<bool> selected = { "Selected", false };
     
     void closedChanged(bool&);
     void invertedChanged(bool&);
