@@ -227,7 +227,7 @@ bool Mapper::load(string filePath) {
 
 		ResolumeLoader resolume(xml);
 
-		if (resolume.isValid()) {
+		if (resolume.isValid() || resolume.isValid("ofxMapper")) {
 			// Composition
 			ofRectangle r = resolume.getCompositionSize();
 			setCompSize(r.width, r.height);
@@ -282,6 +282,87 @@ bool Mapper::load(string filePath) {
 		}
 	}
 	return false;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Mapper::save(string filePath) {
+
+	ofXml xml;
+
+	auto state = xml.appendChild("XmlState");
+	
+	auto version = state.appendChild("versionInfo");
+	version.setAttribute("name", "ofxMapper");
+
+	auto screenSetup = state.appendChild("ScreenSetup");
+
+	auto composition = screenSetup.appendChild("CurrentCompositionTextureSize");
+	composition.setAttribute("width", compRect.width);
+	composition.setAttribute("height", compRect.height);
+
+	auto scrns = screenSetup.appendChild("screens");
+
+	for (auto & screen : screens) {
+		auto scr = scrns.appendChild("Screen");
+		scr.setAttribute("name", screen->name);
+		auto params = scr.appendChild("Params");
+		params.setAttribute("name", "Params");
+		
+		auto pname = params.appendChild("Param");
+		pname.setAttribute("name", "Name");
+		pname.setAttribute("value", screen->name);
+		
+		auto penabled = params.appendChild("Param");
+		penabled.setAttribute("name", "Enabled");
+		penabled.setAttribute("value", screen->enabled ? 1 : 0);
+
+
+		auto layers = scr.appendChild("layers");
+
+		for (auto & slice : screen->getSlices()) {
+			auto slc = layers.appendChild("Slice");
+			params = slc.appendChild("Params");
+			params.setAttribute("name", "Common");
+
+			pname = params.appendChild("Param");
+			pname.setAttribute("name", "Name");
+			pname.setAttribute("value", slice->name);
+			
+			penabled = params.appendChild("Param");
+			penabled.setAttribute("name", "Enabled");
+			penabled.setAttribute("value", slice->enabled);
+
+			ofRectangle inputRect = slice->getInputRect();
+
+			auto irect = slc.appendChild("InputRect");
+			auto v = irect.appendChild("v");
+			v.setAttribute("x", inputRect.getTopLeft().x);
+			v.setAttribute("y", inputRect.getTopLeft().y);
+		}
+
+		auto odevice = scr.appendChild("OutputDevice");
+		auto odevvir = odevice.appendChild("OutputDeviceVirtual");
+		odevvir.setAttribute("name", screen->name);
+		odevvir.setAttribute("width", screen->width);
+		odevvir.setAttribute("height", screen->height);
+
+		params = odevvir.appendChild("Params");
+		params.setAttribute("name", "Params");
+		auto prwidth = params.appendChild("ParamRange");
+		prwidth.setAttribute("name", "Width");
+		prwidth.setAttribute("value", screen->width);
+		auto prheight = params.appendChild("ParamRange");
+		prheight.setAttribute("name", "Height");
+		prheight.setAttribute("value", screen->height);
+	}
+
+	if (xml.save(filePath))
+		compFileName = filePath;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Mapper::save() {
+	save(compFileName);
 }
 
 //--------------------------------------------------------------

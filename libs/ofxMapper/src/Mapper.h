@@ -29,6 +29,8 @@ namespace ofxMapper {
 		// File
 
 		bool load(string filePath);
+		void save(string filePath);
+		void save();
 		string getFileName() const;
 
 

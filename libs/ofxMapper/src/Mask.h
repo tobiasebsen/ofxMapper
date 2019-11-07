@@ -19,6 +19,7 @@ public:
     
     bool select(const glm::vec2 & p);
   
+	bool removeHandleSelected();
 	void moveHandle(DragHandle & handle, const glm::vec2 & delta);
 	void notifyHandles();
 

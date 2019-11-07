@@ -13,7 +13,14 @@ typedef struct {
     BezierPatch * bottomRight = NULL;
 } PatchJunction;
 
-class BezierWarper : public Warper {
+class ControlHandle : public DragHandle {
+public:
+	int vertexIndex = -1;
+	WarpHandle * parent = NULL;
+};
+
+
+class BezierWarper : public Warper, public HasHandlesT<ControlHandle> {
 public:
 
 	BezierWarper();
@@ -23,7 +30,6 @@ public:
 	void setInputRect(shared_ptr<ofRectangle> inputRect);
 
 	void update();
-	void updateHandles();
 	void updateTexCoords();
 
 	void drawGrid();
@@ -35,8 +41,14 @@ public:
     bool select(const glm::vec2 & p);
 
 	void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
-	void notifyHandles();
 
+	void clearHandles();
+	void addHandle(WarpHandle * parent, int x, int y);
+	void updateHandles(vector<WarpHandle> & handles);
+	void moveHandle(ControlHandle & handle, const glm::vec2 & delta);
+	void notifyHandles();
+	//vector<ControlHandle> getHandleControls(WarpHandle & handle);
+	//PatchJunction BezierWarper::getHandlePatches(WarpHandle & handle);
 
 	ofParameter<int> bezierResolution = {"Bezier resolution", 20, 0, 40};
 	ofParameter<int> subdivCols = { "Subdivide horizontal", 20, 0, 40 };

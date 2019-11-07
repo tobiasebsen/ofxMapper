@@ -7,7 +7,7 @@ public:
 
 	ResolumeLoader(ofXml & x) : xml(x) { }
 
-	bool isValid();
+	bool isValid(string versionName = "Resolume Arena");
 	ofRectangle getCompositionSize();
 
 	class Screen;

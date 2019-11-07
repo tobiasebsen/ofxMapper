@@ -4,7 +4,7 @@
 #include "WarpHandle.h"
 #include "SoftEdge.h"
 
-class Warper : public HasHandlesT<WarpHandle> {
+class Warper {
 public:
 	virtual void setInputRect(shared_ptr<ofRectangle> rect) = 0;
 	virtual void setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight) = 0;
@@ -21,5 +21,4 @@ public:
 	virtual bool select(const glm::vec2 & p) = 0;
 
 	virtual void moveHandle(WarpHandle & handle, const glm::vec2 & delta) = 0;
-	virtual void notifyHandles() = 0;
 };

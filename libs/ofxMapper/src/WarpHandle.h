@@ -7,11 +7,6 @@ class WarpHandle : public DragHandle {
 public:
 
 	int vertexIndex = -1;
-	int x = -1;
-	int y = -1;
-	bool isControl = false;
-
-	//size_t gridCol = 0;
-	//size_t gridRow = 0;
+	size_t col = -1;
+	size_t row = -1;
 };
-

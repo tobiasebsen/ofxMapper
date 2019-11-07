@@ -9,7 +9,7 @@
 #include "SoftEdge.h"
 
 
-class Slice : public Element {
+class Slice : public Element, public HasHandlesT<WarpHandle> {
 public:
 	Slice();
 	~Slice();
@@ -34,18 +34,15 @@ public:
 
 
 	Warper * getWarper();
+	BezierWarper & getBezierWarper();
 
 
 	// Handles
-	//void updateHandles();
-	/*size_t getNumHandles() const;
-	DragHandle * getHandle(size_t);
-	const DragHandle * getHandle(size_t) const;
-	bool selectHandle(const glm::vec2 & p, float radius);
+	void updateHandles();
 	bool grabHandle(const glm::vec2 & p, float radius);
-	bool dragHandle(const glm::vec2 & delta) = 0;
-	void releaseHandle() = 0;*/
-	//void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
+	bool dragHandle(const glm::vec2 & delta);
+	void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
+	void notifyHandles();
     
     
 	// Bland rects

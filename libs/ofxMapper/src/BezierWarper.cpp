@@ -28,7 +28,6 @@ void BezierWarper::setVertices(shared_ptr<glm::vec2> vertices, int controlWidth,
 	cols = (controlWidth - 1) / 3;
 
 	update();
-	updateHandles();
 }
 
 //--------------------------------------------------------------
@@ -66,35 +65,6 @@ void BezierWarper::update() {
 
 	makeOutline();
 	makeSubdiv(); // -> makeMesh();
-}
-
-//--------------------------------------------------------------
-void BezierWarper::updateHandles() {
-	size_t gridCols = (controlWidth - 1) / 3 + 1;
-	size_t gridRows = (controlHeight - 1) / 3 + 1;
-
-	handles.resize(controlWidth * controlHeight);
-
-	glm::vec2 * v = vertices.get();
-
-	size_t rowIndex = 0;
-	for (size_t r = 0; r < controlHeight; r++) {
-		for (size_t c = 0; c < controlWidth; c++) {
-			WarpHandle & handle = handles[rowIndex + c];
-
-			handle.vertexIndex = r * controlWidth + c;
-			handle.position = v[handle.vertexIndex];
-
-			//handle.gridCol = c;
-			//handle.gridRow = r;
-			handle.x = c;
-			handle.y = r;
-			handle.selected = false;
-			handle.dragging = false;
-			handle.isControl = (c % 3) || (r % 3);
-		}
-		rowIndex += controlWidth;
-	}
 }
 
 //--------------------------------------------------------------
@@ -306,37 +276,109 @@ bool BezierWarper::select(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
-
 void BezierWarper::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
+	glm::vec2 * v = vertices.get();
+	handle.position = (v[handle.vertexIndex] += delta);
+	for (auto & h : handles) {
+		moveHandle(h, delta);
+	}
+	notifyHandles();
+}
+
+//--------------------------------------------------------------
+void BezierWarper::clearHandles() {
+	handles.clear();
+}
+
+//--------------------------------------------------------------
+void BezierWarper::addHandle(WarpHandle * parent, int x, int y) {
+	ControlHandle h;
+	h.parent = parent;
+	h.vertexIndex = parent->vertexIndex + controlWidth * y + x;
+	h.position = vertices.get()[h.vertexIndex];
+	handles.push_back(h);
+}
+
+//--------------------------------------------------------------
+void BezierWarper::updateHandles(vector<WarpHandle>& warpHandles) {
+	handles.clear();
+
+	for (auto & handle : warpHandles) {
+		if (handle.selected) {
+
+			if (handle.col < cols) {
+				addHandle(&handle, 1, 0);
+				if (handle.row < rows)
+					addHandle(&handle, 1, 1);
+				if (handle.row > 0)
+					addHandle(&handle, 1, -1);
+			}
+			if (handle.col > 0) {
+				addHandle(&handle, -1, 0);
+				if (handle.row < rows)
+					addHandle(&handle, -1, 1);
+				if (handle.row > 0)
+					addHandle(&handle, -1, -1);
+			}
+			if (handle.row < rows) {
+				addHandle(&handle, 0, 1);
+				/*if (handle.col < cols)
+					addHandle(&handle, 1, 1);
+				if (handle.col > 0)
+					addHandle(&handle, -1, 1);*/
+			}
+			if (handle.row > 0) {
+				addHandle(&handle, 0, -1);
+				/*if (handle.col < cols)
+					addHandle(&handle, 1, -1);*/
+				/*if (handle.col > 0)
+					addHandle(&handle, -1, -1);*/
+			}
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void BezierWarper::moveHandle(ControlHandle & handle, const glm::vec2 & delta) {
 	glm::vec2 * v = vertices.get();
 	handle.position = (v[handle.vertexIndex] += delta);
 }
 
-//--------------------------------------------------------------
 void BezierWarper::notifyHandles() {
 	update();
 }
 
+//--------------------------------------------------------------
+/*WarpControls BezierWarper::getHandleControls(WarpHandle & handle) {
+	WarpControls controls;
+	glm::vec2 * v = vertices.get();
+
+	if (handle.col > 0) {
+		controls.left.vertexIndex = handle.vertexIndex - 1;
+		controls.left.position = v[controls.left.vertexIndex];
+	}
+	return controls;
+}*/
 
 //--------------------------------------------------------------
-/*PatchJunction BezierWarper::getHandlePatches(BezierHandle & handle) {
+/*PatchJunction BezierWarper::getHandlePatches(WarpHandle & handle) {
     PatchJunction junc;
 
-    if (handle.x < cols) {
-        if (handle.y < rows)
-            junc.topLeft = &patches[handle.y * cols + handle.x];
-        if (handle.y > 0)
-            junc.bottomLeft = &patches[(handle.y - 1) * cols + handle.x];
+    if (handle.col < cols) {
+        if (handle.row < rows)
+            junc.topLeft = &patches[handle.row * cols + handle.col];
+        if (handle.row > 0)
+            junc.bottomLeft = &patches[(handle.row - 1) * cols + handle.col];
     }
-    if (handle.x > 0) {
-        if (handle.y > 0)
-            junc.bottomRight =  &patches[(handle.y - 1) * cols + handle.x - 1];
-        if (handle.y < rows)
-            junc.topRight = &patches[handle.y * cols + handle.x - 1];
+    if (handle.col > 0) {
+        if (handle.row > 0)
+            junc.bottomRight =  &patches[(handle.row - 1) * cols + handle.col - 1];
+        if (handle.row < rows)
+            junc.topRight = &patches[handle.row * cols + handle.col - 1];
     }
     return junc;
-}
-
+}*/
+/*
 //--------------------------------------------------------------
 void BezierWarper::moveHandle(BezierHandle & handle, glm::vec2 & delta) {
     PatchJunction junction = getHandlePatches(handle);

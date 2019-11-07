@@ -1,6 +1,6 @@
 #include "BezierPatch.h"
 
-bool BezierPatch::tensorPatch = false;
+bool BezierPatch::tensorPatch = true;
 
 //--------------------------------------------------------------
 void BezierPatch::moveTopLeft(glm::vec2 & delta) {

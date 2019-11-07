@@ -46,6 +46,7 @@ ofRectangle Slice::getInputRect() {
 	return ofRectangle(inputRect->x, inputRect->y, inputRect->width, inputRect->height);
 }
 
+//--------------------------------------------------------------
 void Slice::setVertices(vector<glm::vec2>& vertices, size_t controlWidth, size_t controlHeight) {
 	this->controlWidth = controlWidth;
 	this->controlHeight = controlHeight;
@@ -59,8 +60,10 @@ void Slice::setVertices(vector<glm::vec2>& vertices, size_t controlWidth, size_t
 
 	//linearWarper.updateHandles();
 	//bezierWarper.updateHandles();
+	updateHandles();
 }
 
+//--------------------------------------------------------------
 void Slice::createVertices(const ofRectangle & rect) {
 
 	this->controlWidth = 4;
@@ -85,8 +88,10 @@ void Slice::createVertices(const ofRectangle & rect) {
 
 	//linearWarper.updateHandles();
 	//bezierWarper.updateHandles();
+	updateHandles();
 }
 
+//--------------------------------------------------------------
 void Slice::update() {
 	warper->update();
 }
@@ -140,8 +145,13 @@ Warper * Slice::getWarper() {
 }
 
 //--------------------------------------------------------------
-//void Slice::updateHandles() {
-	/*gridCols = (controlWidth - 1) / 3 + 1;
+BezierWarper & Slice::getBezierWarper() {
+	return bezierWarper;
+}
+
+//--------------------------------------------------------------
+void Slice::updateHandles() {
+	gridCols = (controlWidth - 1) / 3 + 1;
 	gridRows = (controlHeight - 1) / 3 + 1;
 
 	handles.resize(gridCols * gridRows);
@@ -156,19 +166,48 @@ Warper * Slice::getWarper() {
 			handle.vertexIndex = r * controlWidth * 3 + c * 3;
 			handle.position = v[handle.vertexIndex];
 
-			//handle.gridCol = c;
-			//handle.gridRow = r;
+			handle.col = c;
+			handle.row = r;
 			handle.selected = false;
 			handle.dragging = false;
 		}
 		rowIndex += gridCols;
-	}*/
-//}
+	}
+}
 
 //--------------------------------------------------------------
-/*void Slice::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
+bool Slice::grabHandle(const glm::vec2 & p, float radius) {
+	bool grabbed = HasHandlesT<WarpHandle>::grabHandle(p, radius);
+	if (bezierEnabled) {
+		if (grabbed) {
+			bezierWarper.updateHandles(handles);
+		}
+		else {
+			grabbed = bezierWarper.grabHandle(p, radius);
+			if (!grabbed)
+				bezierWarper.clearHandles();
+		}
+	}
+	return grabbed;
+}
+
+bool Slice::dragHandle(const glm::vec2 & delta) {
+	bool dragged = HasHandlesT<WarpHandle>::dragHandle(delta);
+	if (bezierEnabled) {
+		bezierWarper.dragHandle(delta);
+	}
+	return dragged;
+}
+
+//--------------------------------------------------------------
+void Slice::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
 	warper->moveHandle(handle, delta);
-}*/
+}
+
+//--------------------------------------------------------------
+void Slice::notifyHandles() {
+	update();
+}
 
 //--------------------------------------------------------------
 void Slice::clearBlendRects() {

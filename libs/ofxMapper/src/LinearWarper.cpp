@@ -28,7 +28,6 @@ void LinearWarper::setVertices(shared_ptr<glm::vec2> vertices, int controlWidth,
     cols = (controlWidth - 1) / 3;
     
     update();
-	updateHandles();
     updateTexCoords();
 }
 
@@ -56,35 +55,6 @@ void LinearWarper::update() {
     
     makeOutline();
     makeMesh();
-}
-
-//--------------------------------------------------------------
-void LinearWarper::updateHandles() {
-	size_t gridCols = (controlWidth - 1) / 3 + 1;
-	size_t gridRows = (controlHeight - 1) / 3 + 1;
-
-	handles.resize(gridCols * gridRows);
-
-	glm::vec2 * v = vertices.get();
-
-	size_t rowIndex = 0;
-	for (size_t r = 0; r < gridRows; r++) {
-		for (size_t c = 0; c < gridCols; c++) {
-			WarpHandle & handle = handles[rowIndex + c];
-
-			handle.vertexIndex = r * controlWidth * 3 + c * 3;
-			handle.position = v[handle.vertexIndex];
-
-			//handle.gridCol = c;
-			//handle.gridRow = r;
-			handle.x = c * 3;
-			handle.y = r * 3;
-			handle.selected = false;
-			handle.dragging = false;
-			handle.isControl = false;
-		}
-		rowIndex += gridCols;
-	}
 }
 
 //--------------------------------------------------------------
@@ -183,11 +153,6 @@ void LinearWarper::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
 	glm::vec2 * v = vertices.get();
 	handle.position = (v[handle.vertexIndex] += delta);
 }
-
-void LinearWarper::notifyHandles() {
-	update();
-}
-
 
 //--------------------------------------------------------------
 void LinearWarper::makeOutline() {

@@ -56,6 +56,22 @@ bool Mask::select(const glm::vec2 &p) {
     return selected;
 }
 
+bool Mask::removeHandleSelected() {
+	bool removed = false;
+	for (auto it = handles.begin(); it!=handles.end(); ) {
+		DragHandle & handle = *it;
+		if (handle.selected) {
+			it = handles.erase(it);
+			removed = true;
+		}
+		else
+			++it;
+	}
+	if (removed)
+		update();
+	return removed;
+}
+
 void Mask::moveHandle(DragHandle & handle, const glm::vec2 & delta) {
 	handle.position += delta;
 }

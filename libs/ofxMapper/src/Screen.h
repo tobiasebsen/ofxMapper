@@ -37,7 +37,7 @@ public:
     size_t getNumMasks() const;
     MaskPtr getMask(size_t maskIndex);
     MaskPtr addMask(string name);
-    void removeMask(size_t maskIndex);
+    void removeMaskSelected();
 
 
 	bool grabSlice(const glm::vec2 & p, float radius);

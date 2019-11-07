@@ -1,11 +1,8 @@
 #include "ResolumeLoader.h"
 
-bool ResolumeLoader::isValid() {
+bool ResolumeLoader::isValid(string versionName) {
     string name = xml.findFirst("//versionInfo").getAttribute("name").getValue();
-    if (name == "Resolume Arena") {
-        return true;
-    }
-	return false;
+	return name == versionName;
 }
 
 ofRectangle ResolumeLoader::getCompositionSize() {

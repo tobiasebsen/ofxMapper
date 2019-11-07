@@ -146,6 +146,18 @@ MaskPtr Screen::addMask(string name) {
 }
 
 //--------------------------------------------------------------
+void Screen::removeMaskSelected() {
+	for (auto & it = masks.begin(); it != masks.end(); ) {
+		MaskPtr mask = *it;
+		if (mask->selected && !mask->removeHandleSelected()) {
+			it = masks.erase(it);
+		}
+		else
+			++it;
+	}
+}
+
+//--------------------------------------------------------------
 void Screen::deselectMasks() { 
     for (MaskPtr mask : masks) {
         mask->selected = false;
@@ -156,8 +168,7 @@ void Screen::deselectMasks() {
 bool Screen::grabSlice(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (SlicePtr slice : slices) {
-		Warper * warper = slice->getWarper();
-		if (slice->editEnabled && warper->grabHandle(p, radius)) {
+		if (slice->editEnabled && slice->grabHandle(p, radius)) {
 			slice->selected = true;
 			return true;
 		}
@@ -209,8 +220,7 @@ void Screen::drag(const glm::vec2 & delta) {
 		return;
 
 	for (SlicePtr slice : slices) {
-		Warper * warper = slice->getWarper();
-		if (slice->editEnabled && warper->dragHandle(delta)) {
+		if (slice->editEnabled && slice->dragHandle(delta)) {
 			drag = true;
 		}
 	}
@@ -223,8 +233,7 @@ void Screen::release() {
 	}
 
 	for (SlicePtr slice : slices) {
-		Warper * warper = slice->getWarper();
-		warper->releaseHandle();
+		slice->releaseHandle();
 	}
 }
 
