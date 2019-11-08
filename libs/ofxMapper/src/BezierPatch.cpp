@@ -28,10 +28,10 @@ void BezierPatch::moveBottomRight(glm::vec2 & delta) {
 
 //--------------------------------------------------------------
 void BezierPatch::setResolution(size_t resolution) {
-	bezierRows[0].setResolution(resolution);
-	bezierCols[0].setResolution(resolution);
-	bezierCols[3].setResolution(resolution);
-	bezierRows[3].setResolution(resolution);
+	for (int i=0; i<4; i++)
+		bezierRows[i].setResolution(resolution);
+	for (int i = 0; i < 4; i++)
+		bezierCols[i].setResolution(resolution);
     for (Bezier & b : bezierSubRows)
         b.setResolution(resolution);
     for (Bezier & b : bezierSubCols)
@@ -133,6 +133,9 @@ void BezierPatch::makeSubdiv(Bezier & a1, Bezier & a2, Bezier & b1, Bezier & b2,
     a1.getResampled(subdiv, vertA);
     a2.getResampled(subdiv, vertB);
 
+	int r1 = a1.getResolution();
+	int r2 = a2.getResolution();
+
     size_t n = vertA.size();
     beziers.resize(n);
 
@@ -149,7 +152,7 @@ void BezierPatch::makeSubdiv(Bezier & a1, Bezier & a2, Bezier & b1, Bezier & b2,
 			glm::vec2 b = vertB[i];
 			glm::vec2 ac = vertC1[i];
 			glm::vec2 bc = vertC2[i];
-			beziers[i].set(a, ac, bc, b);
+			beziers[i].set(a, ac, bc, b, glm::mix(r1, r2, f));
 		}
 	}
 	else {
@@ -159,7 +162,7 @@ void BezierPatch::makeSubdiv(Bezier & a1, Bezier & a2, Bezier & b1, Bezier & b2,
 			glm::vec2 b = vertB[i];
 			glm::vec2 ac = glm::mix(b1.getC1(), b2.getC1(), f) + a;
 			glm::vec2 bc = glm::mix(b1.getC2(), b2.getC2(), f) + b;
-			beziers[i].set(a, ac, bc, b);
+			beziers[i].set(a, ac, bc, b, glm::mix(r1, r2, f));
 		}
 	}
 }

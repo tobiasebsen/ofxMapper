@@ -82,6 +82,18 @@ void Bezier::moveEnd(const glm::vec2 & delta) {
 	setResolution(vertices.size() - 2);
 }
 
+glm::vec2 Bezier::subdivide(float u) {
+	glm::vec2 p10 = glm::mix(a, ac, u);
+	glm::vec2 p11 = glm::mix(ac, bc, u);
+	glm::vec2 p12 = glm::mix(bc, b, u);
+
+	glm::vec2 p20 = glm::mix(p10, p11, u);
+	glm::vec2 p21 = glm::mix(p11, p12, u);
+
+	glm::vec2 p30 = glm::mix(p20, p21, u);
+	return p30;
+}
+
 BezierSampler::BezierSampler(Bezier * bezier, size_t resolution) {
 	this->bezier = bezier;
 	step = bezier->length / (resolution + 1);
@@ -103,6 +115,12 @@ void BezierSampler::next() {
 
 float BezierSampler::getWeight() {
 	return (nextDistance - currentDistance) / delta;
+}
+
+float Bezier::getApproxLength(const glm::vec2 & a, const glm::vec2 & ac, const glm::vec2 & bc, const glm::vec2 & b) {
+	float lc = glm::distance(a, b);
+	float lp = glm::distance(a, ac) + glm::distance(ac, bc) + glm::distance(bc, b);
+	return (2 * lc + lp) / 3;
 }
 
 glm::vec2 Bezier::getPointAtPercent(float f) {

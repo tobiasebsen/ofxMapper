@@ -8,6 +8,7 @@ public:
 	virtual void draw() = 0;
 	virtual void drawOutline() = 0;
 
+	string uniqueId;
 	ofParameter<string> name = { "Name:", "" };
 	ofParameter<bool> enabled = { "Enabled", true };
 	ofParameter<bool> editEnabled = { "Edit", false };

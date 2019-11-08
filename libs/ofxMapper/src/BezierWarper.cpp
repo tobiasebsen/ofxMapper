@@ -1,7 +1,7 @@
 #include "BezierWarper.h"
 
-ofParameter<int> BezierWarper::adaptiveBezierRes = {"Bezier span", 20, 10, 100};
-ofParameter<int> BezierWarper::adaptiveSubdivRes = {"Subdivide span", 80, 10, 200};
+ofParameter<int> BezierWarper::adaptiveBezierRes = {"Bezier span", 50, 10, 100};
+ofParameter<int> BezierWarper::adaptiveSubdivRes = {"Subdivide span", 50, 10, 200};
 
 //--------------------------------------------------------------
 BezierWarper::BezierWarper() {
@@ -49,7 +49,8 @@ void BezierWarper::update() {
 				ac = a + 1;
 				bc = ac + 1;
 				b = bc + 1;
-				patch.bezierRows[i].set(v[a], v[ac], v[bc], v[b], bezierResolution);
+				int res = adaptive ? Bezier::getApproxLength(v[a], v[ac], v[bc], v[b]) / adaptiveBezierRes : bezierResolution;
+				patch.bezierRows[i].set(v[a], v[ac], v[bc], v[b], res);
 			}
 
 			for (size_t i = 0; i < 4; i++) {
@@ -57,7 +58,8 @@ void BezierWarper::update() {
 				ac = a + controlWidth;
 				bc = ac + controlWidth;
 				b = bc + controlWidth;
-				patch.bezierCols[i].set(v[a], v[ac], v[bc], v[b], bezierResolution);
+				int res = adaptive ? Bezier::getApproxLength(v[a], v[ac], v[bc], v[b]) / adaptiveBezierRes : bezierResolution;
+				patch.bezierCols[i].set(v[a], v[ac], v[bc], v[b], res);
 			}
         }
         rowIndex += cols;
@@ -76,30 +78,36 @@ void BezierWarper::setInputRect(shared_ptr<ofRectangle> inputRect) {
 void BezierWarper::makeSubdiv() {
 
     if (adaptive) {
-        if (cols > 0 && rows > 0) {
-            glm::vec2 v1 = patches[0].bezierRows[0].getStart();
-            glm::vec2 v2 = patches[cols-1].bezierRows[0].getEnd();
-            glm::vec2 v3 = patches[(rows-1)*cols].bezierRows[3].getStart();
-            glm::vec2 v4 = patches[(rows-1)*cols+cols-1].bezierRows[3].getEnd();
-            float d1 = glm::distance(v1, v2);
-            float d2 = glm::distance(v3, v4);
-            float d3 = glm::distance(v1, v3);
-            float d4 = glm::distance(v2, v4);
-			int sr = MAX(d1, d2) / adaptiveSubdivRes;
-			int sc = MAX(d3, d4) / adaptiveSubdivRes;
-			if (sr != subdivCols || sc != subdivRows) {
-				subdivRows.setWithoutEventNotifications(sr);
-				subdivCols.setWithoutEventNotifications(sc);
+
+		float colLength = 0;
+		float rowLength = 0;
+
+		for (BezierPatch & patch : patches) {
+
+			for (int i = 0; i < 4; i++) {
+				float length = patch.bezierCols[i].getLength();
+				if (length > colLength)
+					colLength = length;
 			}
-        }
+			for (int i = 0; i < 4; i++) {
+				float length = patch.bezierRows[i].getLength();
+				if (length > rowLength)
+					rowLength = length;
+			}
+		}
+
+		if (colLength > 0 && rowLength > 0) {
+			int sc = colLength / adaptiveSubdivRes;
+			int sr = rowLength / adaptiveSubdivRes;
+			if (sr != subdivCols || sc != subdivRows) {
+				subdivCols.setWithoutEventNotifications(sc);
+				subdivRows.setWithoutEventNotifications(sr);
+			}
+		}
     }
 
-    size_t rowIndex = 0;
-    for (size_t r = 0; r < rows; r++) {
-        for (size_t c = 0; c < cols; c++) {
-            patches[rowIndex+c].subdivide(subdivCols, subdivRows);
-        }
-        rowIndex += cols;
+	for (BezierPatch & patch : patches) {
+        patch.subdivide(subdivCols, subdivRows);
     }
 	makeMesh();
 }
@@ -422,9 +430,7 @@ vector<glm::vec2> BezierWarper::getControls(BezierHandle & handle) {
 //--------------------------------------------------------------
 void BezierWarper::adaptiveBezierChanged(int &) {
     if (adaptive) {
-        for (BezierPatch & p : patches) {
-            //p.setResolution(bezierResolution);
-        }
+		update();
     }
 }
 

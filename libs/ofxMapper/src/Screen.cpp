@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 Screen::Screen() {
+	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
 	width.addListener(this, &Screen::resolutionChanged);
 	height.addListener(this, &Screen::resolutionChanged);
 	int dummy;
@@ -239,6 +240,10 @@ void Screen::release() {
 
 //--------------------------------------------------------------
 void Screen::resolutionChanged(int &) {
+
+	if (width <= 0 || height <= 0)
+		return;
+
 	fbo.allocate(width, height, GL_RGB);
 	fbo.begin();
 	ofClear(ofColor::black);

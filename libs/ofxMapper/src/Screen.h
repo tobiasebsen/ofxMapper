@@ -47,6 +47,7 @@ public:
 	void drag(const glm::vec2 & delta);
 	void release();
 
+	string uniqueId;
 	ofParameter<string> name = { "Name:", "" };
 	ofParameter<int> width = { "Width", 1920, 320, 3840 };
 	ofParameter<int> height = { "Height", 1920, 320, 3840 };

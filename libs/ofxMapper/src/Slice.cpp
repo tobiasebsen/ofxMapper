@@ -3,6 +3,8 @@
 
 //--------------------------------------------------------------
 Slice::Slice() {
+	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
+
 	warper = &linearWarper;
 
 	inputRect = shared_ptr<ofRectangle>(new ofRectangle);
@@ -91,6 +93,18 @@ void Slice::createVertices(const ofRectangle & rect) {
 	updateHandles();
 }
 
+glm::vec2 * Slice::getVertices() {
+	return vertices.get();
+}
+
+size_t Slice::getControlWidth() {
+	return controlWidth;
+}
+
+size_t Slice::getControlHeight() {
+	return controlHeight;
+}
+
 //--------------------------------------------------------------
 void Slice::update() {
 	warper->update();
@@ -151,6 +165,10 @@ BezierWarper & Slice::getBezierWarper() {
 
 //--------------------------------------------------------------
 void Slice::updateHandles() {
+
+	if (controlWidth <= 0 || controlHeight <= 0)
+		return;
+
 	gridCols = (controlWidth - 1) / 3 + 1;
 	gridRows = (controlHeight - 1) / 3 + 1;
 

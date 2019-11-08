@@ -45,6 +45,8 @@ public:
 		return vertices;
 	}
 
+	glm::vec2 subdivide(float u);
+
 	template<typename T>
 	T getVertex(size_t vertexIndex);
     
@@ -63,6 +65,8 @@ public:
     float getLength() {
         return length;
     }
+
+	static float getApproxLength(const glm::vec2 & a, const glm::vec2 & ac, const glm::vec2 & bc, const glm::vec2 & b);
     
     float getDistance() {
         return glm::distance(a, b);

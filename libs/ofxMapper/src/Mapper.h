@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Screen.h"
+#include "ResolumeFile.h"
 
 namespace ofxMapper {
 
@@ -28,6 +29,7 @@ namespace ofxMapper {
 
 		// File
 
+		void clear();
 		bool load(string filePath);
 		void save(string filePath);
 		void save();
@@ -66,6 +68,7 @@ namespace ofxMapper {
 	private:
 		ofRectangle compRect;
 
+		shared_ptr<ResolumeFile> compFile;
 		string compFileName = "untitled.xml";
 
 		// Frame buffer

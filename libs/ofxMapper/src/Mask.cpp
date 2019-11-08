@@ -3,6 +3,7 @@
 ofTessellator tessellator;
 
 Mask::Mask() {
+	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
     closed.addListener(this, &Mask::closedChanged);
     inverted.addListener(this, &Mask::invertedChanged);
     poly.resize(2);

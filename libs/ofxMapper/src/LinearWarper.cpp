@@ -230,10 +230,10 @@ void LinearWarper::loadShaderSoftEdge() {
 
 //--------------------------------------------------------------
 inline float * LinearWarper::getVertexPtr(size_t cornerIndex) {
-    return patches[0].getVertexPtr(cornerIndex);
+    return patches.size() > 0 ? patches[0].getVertexPtr(cornerIndex) : NULL;
 }
 
 //--------------------------------------------------------------
 inline float * LinearWarper::getTexCoordPtr(size_t cornerIndex) {
-    return patches[0].getTexCoordPtr(cornerIndex);
+    return patches.size() > 0 ? patches[0].getTexCoordPtr(cornerIndex) : NULL;
 }

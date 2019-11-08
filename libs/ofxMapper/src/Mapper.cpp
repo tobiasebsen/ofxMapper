@@ -1,5 +1,4 @@
 #include "Mapper.h"
-#include "ResolumeLoader.h"
 
 using namespace ofxMapper;
 
@@ -192,10 +191,11 @@ void Mapper::updateBlendRects() {
                         SlicePtr slice2 = screen2->getSlice(g);
 						ofRectangle inputRect2 = slice2->getInputRect();
 
-						ofRectangle blendRect = inputRect1.getIntersection(inputRect2);
-						if (!blendRect.isEmpty() && blendRect.getArea() < inputRect1.getArea()/2.f) {
-
-							slice1->addBlendRect(blendRect);
+						if (slice1->softEdgeEnabled && slice2->softEdgeEnabled) {
+							ofRectangle blendRect = inputRect1.getIntersection(inputRect2);
+							if (!blendRect.isEmpty() && blendRect.getArea() < inputRect1.getArea() / 2.f) {
+								slice1->addBlendRect(blendRect);
+							}
 						}
                     }
                 }
@@ -218,37 +218,44 @@ void Mapper::drawBlendRects() {
     }
 }
 
+void ofxMapper::Mapper::clear() {
+	compFile.reset();
+	screens.clear();
+}
+
 //--------------------------------------------------------------
 bool Mapper::load(string filePath) {
-	ofXml xml;
-	bool loaded = xml.load(filePath);
+
+	//ResolumeFile resolume(xml);
+	compFile = shared_ptr<ResolumeFile>(new ResolumeFile);
+	bool loaded = compFile->load(filePath);
 
 	if (loaded) {
 
-		ResolumeLoader resolume(xml);
-
-		if (resolume.isValid() || resolume.isValid("ofxMapper")) {
+		if (compFile->isValid() || compFile->isValid("ofxMapper")) {
 			// Composition
-			ofRectangle r = resolume.getCompositionSize();
+			ofRectangle r = compFile->getCompositionSize();
 			setCompSize(r.width, r.height);
 
 			// Screens
 			screens.clear();
-			int nscreens = resolume.loadScreens();
+			int nscreens = compFile->loadScreens();
 			for (int i = 0; i < nscreens; i++) {
-				ResolumeLoader::Screen sc = resolume.getScreen(i);
-				string name = sc.getName();
+				ResolumeFile::Screen sc = compFile->getScreen(i);
 				ofRectangle res = sc.getSize();
-				bool enabled = sc.getEnabled();
-				ScreenPtr screen = addScreen(name, res.width, res.height, enabled);
+				ScreenPtr screen = addScreen(res.width, res.height);
+				screen->uniqueId = sc.getUniqueId();
+				screen->name = sc.getName();
+				screen->enabled = sc.getEnabled();
 
 				// Slices
-				int nslices = sc.loadSlices();
+				int nslices = sc.getNumSlices();
 				for (int j = 0; j < nslices; j++) {
-					ResolumeLoader::Slice sl = sc.getSlice(j);
+					ResolumeFile::Slice sl = sc.getSlice(j);
 					string name = sl.getName();
 					ofRectangle inputRect = sl.getInputRect();
 					SlicePtr slice = screen->addSlice(name, inputRect);
+					slice->uniqueId = sl.getUniqueId();
 					slice->enabled = sl.getEnabled();
 					slice->softEdgeEnabled = sl.getSoftEdgeEnabled();
 
@@ -267,13 +274,15 @@ bool Mapper::load(string filePath) {
 				}
 
 				// Masks
-				int nmasks = sc.loadMasks();
+				int nmasks = sc.getNumMasks();
 				for (int j = 0; j < nmasks; j++) {
-					ResolumeLoader::Mask msk = sc.getMask(j);
+					ResolumeFile::Mask msk = sc.getMask(j);
 					string name = msk.getName();
 					auto points = msk.getPoints();
 
 					MaskPtr mask = screen->addMask(name);
+					mask->uniqueId = msk.getUniqueId();
+					mask->enabled = msk.getEnabled();
 					mask->setPoints(points);
 				}
 			}
@@ -287,76 +296,37 @@ bool Mapper::load(string filePath) {
 //--------------------------------------------------------------
 void ofxMapper::Mapper::save(string filePath) {
 
-	ofXml xml;
-
-	auto state = xml.appendChild("XmlState");
-	
-	auto version = state.appendChild("versionInfo");
-	version.setAttribute("name", "ofxMapper");
-
-	auto screenSetup = state.appendChild("ScreenSetup");
-
-	auto composition = screenSetup.appendChild("CurrentCompositionTextureSize");
-	composition.setAttribute("width", compRect.width);
-	composition.setAttribute("height", compRect.height);
-
-	auto scrns = screenSetup.appendChild("screens");
-
-	for (auto & screen : screens) {
-		auto scr = scrns.appendChild("Screen");
-		scr.setAttribute("name", screen->name);
-		auto params = scr.appendChild("Params");
-		params.setAttribute("name", "Params");
-		
-		auto pname = params.appendChild("Param");
-		pname.setAttribute("name", "Name");
-		pname.setAttribute("value", screen->name);
-		
-		auto penabled = params.appendChild("Param");
-		penabled.setAttribute("name", "Enabled");
-		penabled.setAttribute("value", screen->enabled ? 1 : 0);
-
-
-		auto layers = scr.appendChild("layers");
-
-		for (auto & slice : screen->getSlices()) {
-			auto slc = layers.appendChild("Slice");
-			params = slc.appendChild("Params");
-			params.setAttribute("name", "Common");
-
-			pname = params.appendChild("Param");
-			pname.setAttribute("name", "Name");
-			pname.setAttribute("value", slice->name);
-			
-			penabled = params.appendChild("Param");
-			penabled.setAttribute("name", "Enabled");
-			penabled.setAttribute("value", slice->enabled);
-
-			ofRectangle inputRect = slice->getInputRect();
-
-			auto irect = slc.appendChild("InputRect");
-			auto v = irect.appendChild("v");
-			v.setAttribute("x", inputRect.getTopLeft().x);
-			v.setAttribute("y", inputRect.getTopLeft().y);
-		}
-
-		auto odevice = scr.appendChild("OutputDevice");
-		auto odevvir = odevice.appendChild("OutputDeviceVirtual");
-		odevvir.setAttribute("name", screen->name);
-		odevvir.setAttribute("width", screen->width);
-		odevvir.setAttribute("height", screen->height);
-
-		params = odevvir.appendChild("Params");
-		params.setAttribute("name", "Params");
-		auto prwidth = params.appendChild("ParamRange");
-		prwidth.setAttribute("name", "Width");
-		prwidth.setAttribute("value", screen->width);
-		auto prheight = params.appendChild("ParamRange");
-		prheight.setAttribute("name", "Height");
-		prheight.setAttribute("value", screen->height);
+	//ResolumeFile saver(xml);
+	if (!compFile) {
+		compFile = shared_ptr<ResolumeFile>(new ResolumeFile);
+		compFile->setVersion("ofxMapper");
 	}
 
-	if (xml.save(filePath))
+	compFile->setCompositionSize(compRect.width, compRect.height);
+
+	for (auto & screen : screens) {
+		ResolumeFile::Screen scr = compFile->getScreen(screen->uniqueId);
+		scr.setName(screen->name);
+		scr.setEnabled(screen->enabled);
+
+		for (auto & slice : screen->getSlices()) {
+			ResolumeFile::Slice slc = scr.getSlice(slice->uniqueId);
+			slc.setName(slice->name);
+			slc.setEnabled(slice->enabled);
+			slc.setInputRect(slice->getInputRect());
+			slc.setWarperMode(slice->bezierEnabled ? "PM_BEZIER" : "PM_LINEAR");
+
+			slc.setWarperVertices(slice->getControlWidth(), slice->getControlHeight(), slice->getVertices());
+		}
+
+		for (auto & mask : screen->getMasks()) {
+
+		}
+
+		scr.setSize(screen->width, screen->height);
+	}
+
+	if (compFile->save(filePath))
 		compFileName = filePath;
 }
 
