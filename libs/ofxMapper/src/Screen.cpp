@@ -148,7 +148,7 @@ MaskPtr Screen::addMask(string name) {
 
 //--------------------------------------------------------------
 void Screen::removeMaskSelected() {
-	for (auto & it = masks.begin(); it != masks.end(); ) {
+	for (auto it = masks.begin(); it != masks.end(); ) {
 		MaskPtr mask = *it;
 		if (mask->selected && !mask->removeHandleSelected()) {
 			it = masks.erase(it);
