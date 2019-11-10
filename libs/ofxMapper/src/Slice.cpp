@@ -11,11 +11,6 @@ Slice::Slice() {
 	bezierWarper.setInputRect(inputRect);
     linearWarper.setInputRect(inputRect);
 
-	controlWidth = 0;
-	controlHeight = 0;
-	gridCols = 0;
-	gridRows = 0;
-
 	inputX.addListener(this, &Slice::inputRectChanged);
 	inputY.addListener(this, &Slice::inputRectChanged);
 	inputWidth.addListener(this, &Slice::inputRectChanged);
@@ -49,65 +44,78 @@ ofRectangle Slice::getInputRect() {
 }
 
 //--------------------------------------------------------------
-void Slice::setVertices(vector<glm::vec2>& vertices, size_t controlWidth, size_t controlHeight) {
-	this->controlWidth = controlWidth;
-	this->controlHeight = controlHeight;
+void Slice::setVertices(vector<glm::vec2>& v, size_t controlWidth, size_t controlHeight) {
 
-	size_t n = vertices.size();
-	this->vertices = shared_ptr<glm::vec2>(new glm::vec2[n]);
-	std::copy(vertices.begin(), vertices.end(), this->vertices.get());
+    vertices = shared_ptr<Vertices>(new Vertices(controlWidth, controlHeight));
+	std::copy(v.begin(), v.end(), vertices->data);
 
-	linearWarper.setVertices(this->vertices, controlWidth, controlHeight);
-    bezierWarper.setVertices(this->vertices, controlWidth, controlHeight);
+	linearWarper.setVertices(vertices);
+    bezierWarper.setVertices(vertices);
 
-	//linearWarper.updateHandles();
-	//bezierWarper.updateHandles();
 	updateHandles();
 }
 
 //--------------------------------------------------------------
 void Slice::createVertices(const ofRectangle & rect) {
 
-	this->controlWidth = 4;
+	/*this->controlWidth = 4;
 	this->controlHeight = 4;
 
 	size_t n = controlWidth * controlHeight;;
 	vertices = shared_ptr<glm::vec2>(new glm::vec2[n]);
-	glm::vec2 * v = vertices.get();
+	glm::vec2 * v = vertices.get();*/
+    vertices = shared_ptr<Vertices>(new Vertices(4, 4));
+    glm::vec2 * v = vertices->data;
 
 	glm::vec2 v0 = rect.getTopLeft();
 	glm::vec2 v1 = rect.getBottomRight();
 
-	for (size_t r = 0; r < controlHeight; r++) {
-		for (size_t c = 0; c < controlWidth; c++) {
-			glm::vec2 delta = glm::vec2(c / 3.f, r / 3.f);
-			v[r * controlWidth + c] = glm::mix(v0, v1, delta);
+	for (size_t y = 0; y < vertices->height; y++) {
+		for (size_t x = 0; x < vertices->width; x++) {
+			glm::vec2 delta = glm::vec2(x / 3.f, y / 3.f);
+			v[y * vertices->width + x] = glm::mix(v0, v1, delta);
 		}
 	}
 
-	linearWarper.setVertices(this->vertices, controlWidth, controlHeight);
-	bezierWarper.setVertices(this->vertices, controlWidth, controlHeight);
+	linearWarper.setVertices(vertices);
+	bezierWarper.setVertices(vertices);
 
 	//linearWarper.updateHandles();
 	//bezierWarper.updateHandles();
 	updateHandles();
 }
 
+//--------------------------------------------------------------
 glm::vec2 * Slice::getVertices() {
-	return vertices.get();
+	return vertices->data;
 }
 
+//--------------------------------------------------------------
 size_t Slice::getControlWidth() {
-	return controlWidth;
+	return vertices->width;
 }
 
+//--------------------------------------------------------------
 size_t Slice::getControlHeight() {
-	return controlHeight;
+	return vertices->height;
+}
+
+//--------------------------------------------------------------
+void Slice::subdivide(int cols, int rows) {
+    if (bezierEnabled)
+        vertices = bezierWarper.subdivide(cols, rows);
+    else
+        vertices = linearWarper.subdivide(cols, rows);
+
+    linearWarper.setVertices(vertices);
+    bezierWarper.setVertices(vertices);
+
+    updateHandles();
 }
 
 //--------------------------------------------------------------
 void Slice::update() {
-	warper->update();
+	warper->updatePatches();
 }
 
 //--------------------------------------------------------------
@@ -166,22 +174,22 @@ BezierWarper & Slice::getBezierWarper() {
 //--------------------------------------------------------------
 void Slice::updateHandles() {
 
-	if (controlWidth <= 0 || controlHeight <= 0)
+	if (!vertices)
 		return;
 
-	gridCols = (controlWidth - 1) / 3 + 1;
-	gridRows = (controlHeight - 1) / 3 + 1;
+	int gridCols = (vertices->width - 1) / 3 + 1;
+	int gridRows = (vertices->height - 1) / 3 + 1;
 
 	handles.resize(gridCols * gridRows);
 
-	glm::vec2 * v = vertices.get();
+	glm::vec2 * v = vertices->data;
 	
 	size_t rowIndex = 0;
 	for (size_t r = 0; r < gridRows; r++) {
 		for (size_t c = 0; c < gridCols; c++) {
 			WarpHandle & handle = handles[rowIndex + c];
 
-			handle.vertexIndex = r * controlWidth * 3 + c * 3;
+			handle.vertexIndex = r * vertices->width * 3 + c * 3;
 			handle.position = v[handle.vertexIndex];
 
 			handle.col = c;
@@ -273,6 +281,6 @@ void Slice::bezierChanged(bool &) {
     else
         warper = &linearWarper;
 
-    warper->update();
+    warper->updatePatches();
     warper->updateTexCoords();
 }

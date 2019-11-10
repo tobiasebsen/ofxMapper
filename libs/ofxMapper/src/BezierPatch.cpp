@@ -3,7 +3,7 @@
 bool BezierPatch::tensorPatch = true;
 
 //--------------------------------------------------------------
-void BezierPatch::moveTopLeft(glm::vec2 & delta) {
+/*void BezierPatch::moveTopLeft(glm::vec2 & delta) {
     bezierRows[0].moveStart(delta);
     bezierCols[0].moveStart(delta);
 }
@@ -24,7 +24,7 @@ void BezierPatch::moveBottomLeft(glm::vec2 & delta) {
 void BezierPatch::moveBottomRight(glm::vec2 & delta) {
 	bezierRows[3].moveEnd(delta);
 	bezierCols[3].moveEnd(delta);
-}
+}*/
 
 //--------------------------------------------------------------
 void BezierPatch::setResolution(size_t resolution) {

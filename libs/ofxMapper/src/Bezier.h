@@ -45,7 +45,7 @@ public:
 		return vertices;
 	}
 
-	glm::vec2 subdivide(float u);
+    std::vector<Bezier> subdivide(int subdivisions);
 
 	template<typename T>
 	T getVertex(size_t vertexIndex);

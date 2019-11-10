@@ -26,13 +26,15 @@ public:
 	BezierWarper();
 	~BezierWarper();
 
-	void setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight);
+	void setVertices(shared_ptr<Vertices> vertices);
 	void setInputRect(shared_ptr<ofRectangle> inputRect);
+    
+    VerticesPtr subdivide(int cols, int rows);
 
-	void update();
-	void updateTexCoords();
+    void updatePatches();
+    void updateTexCoords();
 
-	void drawGrid();
+    void drawGrid();
 	void drawSubGrid();
 	void drawOutline();
     void drawMesh();
@@ -51,19 +53,19 @@ public:
 	//PatchJunction BezierWarper::getHandlePatches(WarpHandle & handle);
 
 	ofParameter<int> bezierResolution = {"Bezier resolution", 20, 0, 40};
-	ofParameter<int> subdivCols = { "Subdivide horizontal", 20, 0, 40 };
-	ofParameter<int> subdivRows = { "Subdivide vertical", 20, 0, 40 };
+	ofParameter<int> subCols = { "Sub-bezier columns", 20, 0, 40 };
+	ofParameter<int> subRows = { "Sub-bezier rows", 20, 0, 40 };
     ofParameter<bool> adaptive = { "Adaptive", true };
 
     static ofParameter<int> adaptiveBezierRes;
-    static ofParameter<int> adaptiveSubdivRes;
+    static ofParameter<int> adaptiveSubRes;
 
-	void adaptiveSubdivChanged(int&);
+	void adaptiveSubChanged(int&);
     void adaptiveBezierChanged(int&);
 
 private:
 	//void makeHandles();
-	void makeSubdiv();
+	void makeSub();
 	void makeOutline();
     void makeMesh();
 
@@ -73,9 +75,7 @@ private:
 
 	shared_ptr<ofRectangle> inputRect;
 
-	size_t controlWidth;
-	size_t controlHeight;
-	shared_ptr<glm::vec2> vertices;
+	shared_ptr<Vertices> vertices;
 
     size_t cols;
     size_t rows;

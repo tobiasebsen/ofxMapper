@@ -4,50 +4,86 @@
 ofShader LinearWarper::shader;
 ofShader LinearWarper::shaderSoftEdge;
 
+//--------------------------------------------------------------
 LinearWarper::LinearWarper() {
     inputRect = shared_ptr<ofRectangle>(new ofRectangle);
     rows = 0;
     cols = 0;
-    controlWidth = 0;
-    controlHeight = 0;
 }
 
 //--------------------------------------------------------------
 void LinearWarper::setInputRect(shared_ptr<ofRectangle> rect) {
     inputRect = rect;
-}
-
-//--------------------------------------------------------------
-void LinearWarper::setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight) {
-
-    this->controlWidth = controlWidth;
-    this->controlHeight = controlHeight;
-    this->vertices = vertices;
-    
-    rows = (controlHeight - 1) / 3;
-    cols = (controlWidth - 1) / 3;
-    
-    update();
     updateTexCoords();
 }
 
 //--------------------------------------------------------------
-void LinearWarper::update() {
+void LinearWarper::setVertices(shared_ptr<Vertices> v) {
 
+    vertices = v;
+
+    cols = (vertices->width - 1) / 3;
+    rows = (vertices->height - 1) / 3;
+    
+    updatePatches();
+    updateTexCoords();
+}
+
+//--------------------------------------------------------------
+VerticesPtr LinearWarper::subdivide(int subdivCols, int subdivRows) {
+
+    int subWidth = (vertices->width-1) * subdivCols + 1;
+    int subHeight = (vertices->height-1) * subdivRows + 1;
+    shared_ptr<Vertices> subvertices = shared_ptr<Vertices>(new Vertices(subWidth, subHeight));
+    
+    int subdivColStride = subdivCols * 3;
+    int subdivRowStride = subdivRows * 3;
+    float dx = 1.f/subdivColStride;
+    float dy = 1.f/subdivRowStride;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            int i = r * vertices->width * 3 + c * 3;
+            glm::vec2 v00 = vertices->data[i];
+            glm::vec2 v10 = vertices->data[i+3];
+            glm::vec2 v01 = vertices->data[i+vertices->width*3];
+            glm::vec2 v11 = vertices->data[i+vertices->width*3+3];
+            int row = r * subdivRows * 3;
+            int col = c * subdivCols * 3;
+            
+            for (int y=0; y<=subdivRowStride; y++) {
+                float fy = y * dy;
+                glm::vec2 w0 = glm::mix(v00, v01, fy);
+                glm::vec2 w1 = glm::mix(v10, v11, fy);
+
+                for (int x=0; x<=subdivColStride; x++) {
+                    float fx = x * dx;
+                    int j = (row + y) * subWidth + (col + x);
+                    subvertices->data[j] = glm::mix(w0, w1, fx);
+                }
+            }
+        }
+    }
+    return subvertices;
+}
+
+//--------------------------------------------------------------
+void LinearWarper::updatePatches() {
+    
     patches.resize(rows * cols);
     
-    glm::vec2 * v = vertices.get();
+    glm::vec2 * v = vertices->data;
     
     size_t rowIndex = 0;
     for (size_t r=0; r<rows; r++) {
         for (size_t c=0; c<cols; c++) {
             LinearPatch & patch = patches[rowIndex+c];
-
-            size_t itl = r * controlWidth * 3 + c * 3;
+            
+            size_t itl = r * vertices->width * 3 + c * 3;
             size_t itr = itl + 3;
-            size_t ibr = itr + controlWidth * 3;
+            size_t ibr = itr + vertices->width * 3;
             size_t ibl = ibr - 3;
-
+            
             patch.setVertices(v[itl], v[itr], v[ibr], v[ibl]);
         }
         rowIndex += cols;
@@ -117,6 +153,7 @@ void LinearWarper::drawMesh() {
     shader.end();
 }
 
+//--------------------------------------------------------------
 void LinearWarper::setShaderAttributes(ofShader & s) {
 	s.setAttribute2fv("c1", getVertexPtr(0), sizeof(CornerVertexAttrib));
 	s.setAttribute2fv("c2", getVertexPtr(1), sizeof(CornerVertexAttrib));
@@ -150,8 +187,49 @@ bool LinearWarper::select(const glm::vec2 & p) {
 
 //--------------------------------------------------------------
 void LinearWarper::moveHandle(WarpHandle & handle, const glm::vec2 & delta) {
-	glm::vec2 * v = vertices.get();
+	glm::vec2 * v = vertices->data;
 	handle.position = (v[handle.vertexIndex] += delta);
+
+    if (handle.col < cols) {
+        if (handle.row > 0)
+            updatePatchVertices(handle.col, handle.row-1);
+        if (handle.row < rows)
+            updatePatchVertices(handle.col, handle.row);
+    }
+    if (handle.col > 0) {
+        if (handle.row > 0)
+            updatePatchVertices(handle.col-1, handle.row-1);
+        if (handle.row < rows)
+            updatePatchVertices(handle.col-1, handle.row);
+    }
+}
+
+//--------------------------------------------------------------
+void LinearWarper::updatePatchVertices(int col, int row) {
+    int c1 = col * 3;
+    int c2 = (col+1) * 3;
+    int r1 = row * 3;
+    int r2 = (row+1) * 3;
+    int stride = vertices->width;
+
+    glm::vec2 * v = vertices->data;
+    glm::vec2 v00 = v[r1*stride+c1];
+    glm::vec2 v10 = v[r1*stride+c2];
+    glm::vec2 v01 = v[r2*stride+c1];
+    glm::vec2 v11 = v[r2*stride+c2];
+    
+    for (int r=0; r<4; r++) {
+        float fr = r/3.f;
+        glm::vec2 w0 = glm::mix(v00, v01, fr);
+        glm::vec2 w1 = glm::mix(v10, v11, fr);
+
+        for (int c=0; c<4; c++) {
+            float fc = c/3.f;
+            int index = (r1 + r) * stride + (c1 + c);
+
+            v[index] = glm::mix(w0, w1, fc);
+        }
+    }
 }
 
 //--------------------------------------------------------------

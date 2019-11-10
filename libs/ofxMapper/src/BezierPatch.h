@@ -1,15 +1,16 @@
 #pragma once
 
+#include "Warper.h"
 #include "Bezier.h"
 #include <vector>
 
 class BezierPatch {
 public:
     
-    void moveTopLeft(glm::vec2 & delta);
+    /*void moveTopLeft(glm::vec2 & delta);
     void moveTopRight(glm::vec2 & delta);
     void moveBottomLeft(glm::vec2 & delta);
-    void moveBottomRight(glm::vec2 & delta);
+    void moveBottomRight(glm::vec2 & delta);*/
 
     void setResolution(size_t resolution);
     void subdivide(size_t subdivRows, size_t subdivCols);

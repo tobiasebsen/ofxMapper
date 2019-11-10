@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Element.h"
+#include "Vertices.h"
 #include "Warper.h"
 #include "WarpHandle.h"
 #include "BezierWarper.h"
@@ -14,16 +15,17 @@ public:
 	Slice();
 	~Slice();
 
+    // Input rectangle
 	void setInputRect(ofRectangle inputRect);
 	ofRectangle getInputRect();
 
+    // Vertices
 	void setVertices(vector<glm::vec2> & vertices, size_t controlWidth, size_t controlHeight);
 	void createVertices(const ofRectangle & rect);
 	glm::vec2 * getVertices();
 	size_t getControlWidth();
 	size_t getControlHeight();
-
-	void update();
+    void subdivide(int cols, int rows);
 
 	// Draw
 	virtual void draw();
@@ -36,6 +38,8 @@ public:
 	bool selectWarper(const glm::vec2 & p);
 
 
+    // Warper
+    void update();
 	Warper * getWarper();
 	BezierWarper & getBezierWarper();
 
@@ -72,7 +76,15 @@ public:
 
     //ofParameter<bool> editEnabled = { "Edit", false };
 	ofParameter<bool> bezierEnabled = { "Bezier", false };
-	ofParameterGroup warperGroup = {"Warper", name, enabled, editEnabled, bezierEnabled, softEdgeEnabled };
+    ofParameter<bool> colorEnabled = { "Color correction", false };
+	ofParameterGroup warperGroup = {"Warper", name, enabled, editEnabled, bezierEnabled, colorEnabled, softEdgeEnabled };
+    
+    ofParameter<float> colorBrightness = {"Brightness", 0, -1, 1};
+    ofParameter<float> colorContrast = {"Contrast", 0, -1, 1};
+    ofParameter<float> colorRed = {"Red", 0, -1, 1};
+    ofParameter<float> colorGreen = {"Green", 0, -1, 1};
+    ofParameter<float> colorBlue = {"Blue", 0, -1, 1};
+    ofParameterGroup colorGroup = {"Color correction", colorBrightness, colorContrast, colorRed, colorGreen, colorBlue};
 
 	void inputRectChanged(int&);
     void bezierChanged(bool&);
@@ -80,13 +92,7 @@ public:
 private:
 	shared_ptr<ofRectangle> inputRect;
 
-	size_t controlWidth;
-	size_t controlHeight;
-	shared_ptr<glm::vec2> vertices;
-
-	size_t gridCols;
-	size_t gridRows;
-	//vector<WarpHandle> handles;
+	shared_ptr<Vertices> vertices;
 
 	Warper * warper;
 	BezierWarper bezierWarper;

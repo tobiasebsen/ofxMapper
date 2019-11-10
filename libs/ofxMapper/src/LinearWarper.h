@@ -9,10 +9,12 @@ public:
     LinearWarper();
 
     void setInputRect(shared_ptr<ofRectangle> rect);
-    void setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight);
+    void setVertices(shared_ptr<Vertices> vertices);
+    
+    VerticesPtr subdivide(int cols, int rows);
 
-    void update();
-	void updateTexCoords();
+    void updatePatches();
+    void updateTexCoords();
 
     void drawGrid();
     void drawSubGrid();
@@ -25,6 +27,8 @@ public:
 	void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
 
 private:
+    void updatePatchVertices(int col, int row);
+
     void makeOutline();
     void makeMesh();
     static void loadShader();
@@ -36,9 +40,7 @@ private:
     
     shared_ptr<ofRectangle> inputRect;
 
-    size_t controlWidth;
-    size_t controlHeight;
-    shared_ptr<glm::vec2> vertices;
+    shared_ptr<Vertices> vertices;
     
     size_t cols;
     size_t rows;

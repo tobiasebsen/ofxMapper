@@ -1,16 +1,20 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Vertices.h"
 #include "WarpHandle.h"
 #include "SoftEdge.h"
+
 
 class Warper {
 public:
 	virtual void setInputRect(shared_ptr<ofRectangle> rect) = 0;
-	virtual void setVertices(shared_ptr<glm::vec2> vertices, int controlWidth, int controlHeight) = 0;
+	virtual void setVertices(shared_ptr<Vertices> vertices) = 0;
 
-	virtual void update() = 0;
-	virtual void updateTexCoords() = 0;
+    virtual VerticesPtr subdivide(int cols, int rows) = 0;
+
+    virtual void updatePatches() = 0;
+    virtual void updateTexCoords() = 0;
 
 	virtual void drawGrid() = 0;
 	virtual void drawSubGrid() = 0;
