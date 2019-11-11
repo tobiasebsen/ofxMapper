@@ -39,23 +39,107 @@ VerticesPtr BezierWarper::subdivide(int subdivCols, int subdivRows) {
         for (int c = 0; c < cols; c++) {
             BezierPatch & patch = patches[r * cols + c];
 
-            vector<Bezier> subRowTop = patch.bezierRows[0].subdivide(subdivCols);
-            //vector<Bezier> subRowBot = patch.bezierRows[3].subdivide(subdivCols);
+			int row = r * subdivRows * 3;
+			int col = c * subdivCols * 3;
+			
+			vector<Bezier> subRowTop = patch.bezierRows[0].subdivide(subdivCols-1);
+            vector<Bezier> subRowBot = patch.bezierRows[3].subdivide(subdivCols-1);
 
-            int row = r * subdivRows * 3;
-            int col = c * subdivCols * 3;
+			for (int x = 0; x < subdivCols; x++) {
 
-            for (int y=0; y<=subdivRows; y++) {
+				glm::vec2 v0 = subRowTop[x].getStart();
+				glm::vec2 v1 = subRowTop[x].getC1();
+				glm::vec2 v2 = subRowTop[x].getC2();
+				glm::vec2 v3 = subRowTop[x].getEnd();
 
-                for (int x=0; x<=subdivCols; x++) {
-                    int j = (row + y * 3) * subWidth + (col + x * 3);
-                    subvertices->data[j+0] = subRowTop[x].getStart();
-                    subvertices->data[j+1] = subRowTop[x].getStart() + subRowTop[x].getC1();
-                    subvertices->data[j+2] = subRowTop[x].getEnd() + subRowTop[x].getC2();
-                    subvertices->data[j+3] = subRowTop[x].getEnd();
+				glm::vec2 w0 = subRowBot[x].getStart();
+				glm::vec2 w1 = subRowBot[x].getC1();
+				glm::vec2 w2 = subRowBot[x].getC2();
+				glm::vec2 w3 = subRowBot[x].getEnd();
+
+				for (int y=0; y<=subdivRows; y++) {
+					float f = (float)y / (float)subdivRows;
+                    
+					int j = (row + y * 3) * subWidth + (col + x * 3);
+
+					glm::vec2 u0 = mix(v0, w0, f);
+					glm::vec2 u3 = mix(v3, w3, f);
+
+					subvertices->data[j+0] = u0;
+					subvertices->data[j+1] = u0 + mix(v1, w1, f);
+					subvertices->data[j+2] = u3 + mix(v2, w2, f);
+					subvertices->data[j+3] = u3;
                 }
             }
-        }
+
+			vector<Bezier> subColLeft = patch.bezierCols[0].subdivide(subdivRows - 1);
+			vector<Bezier> subColRight = patch.bezierCols[3].subdivide(subdivRows - 1);
+
+			for (int y = 0; y < subdivRows; y++) {
+
+				glm::vec2 v0 = subColLeft[y].getStart();
+				glm::vec2 v1 = subColLeft[y].getC1();
+				glm::vec2 v2 = subColLeft[y].getC2();
+				glm::vec2 v3 = subColLeft[y].getEnd();
+
+				glm::vec2 w0 = subColRight[y].getStart();
+				glm::vec2 w1 = subColRight[y].getC1();
+				glm::vec2 w2 = subColRight[y].getC2();
+				glm::vec2 w3 = subColRight[y].getEnd();
+
+				for (int x = 0; x <= subdivCols; x++) {
+					float f = (float)x / (float)subdivCols;
+
+					int j = (row + y * 3) * subWidth + (col + x * 3);
+
+					glm::vec2 u0 = mix(v0, w0, f);
+					glm::vec2 u1 = mix(v1, w1, f);
+					glm::vec2 u2 = mix(v2, w2, f);
+					glm::vec2 u3 = mix(v3, w3, f);
+
+					if (x == 0 || x == subdivCols) {
+						subvertices->data[j + 0 * subWidth] = u0;
+						subvertices->data[j + 1 * subWidth] = u0 + mix(v1, w1, f);
+						subvertices->data[j + 2 * subWidth] = u3 + mix(v2, w2, f);
+						subvertices->data[j + 3 * subWidth] = u3;
+					}
+					else {
+						glm::vec2 t0 = subvertices->data[j + 0 * subWidth];
+						subvertices->data[j + 1 * subWidth] = t0 + u1;
+						glm::vec2 t3 = subvertices->data[j + 3 * subWidth];
+						subvertices->data[j + 2 * subWidth] = t3 + u2;
+					}
+				}
+			}
+
+			for (int y = 0; y < subdivRows; y++) {
+				for (int x = 0; x < subdivCols; x++) {
+					int j = (row + y * 3) * subWidth + (col + x * 3);
+
+					glm::vec2 a0 = subvertices->data[j + 0];
+					glm::vec2 c00 = subvertices->data[j + 1] - a0;
+					glm::vec2 c01 = subvertices->data[j + subWidth] - a0;
+					subvertices->data[j + subWidth + 1] = a0 + c00 + c01;
+
+					glm::vec2 b0 = subvertices->data[j + 3];
+					glm::vec2 c10 = subvertices->data[j + 2] - b0;
+					glm::vec2 c11 = subvertices->data[j + subWidth + 3] - b0;
+					subvertices->data[j + subWidth + 2] = b0 + c10 + c11;
+
+					j += subWidth * 3;
+
+					glm::vec2 a1 = subvertices->data[j + 0];
+					glm::vec2 d00 = subvertices->data[j + 1] - a1;
+					glm::vec2 d01 = subvertices->data[j - subWidth] - a1;
+					subvertices->data[j - subWidth + 1] = a1 + d00 + d01;
+
+					glm::vec2 b1 = subvertices->data[j + 3];
+					glm::vec2 d10 = subvertices->data[j + 2] - b1;
+					glm::vec2 d11 = subvertices->data[j - subWidth + 3] - b1;
+					subvertices->data[j - subWidth + 2] = b1 + d10 + d11;
+				}
+			}
+		}
     }
     return subvertices;
 }

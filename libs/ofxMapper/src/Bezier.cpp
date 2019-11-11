@@ -85,28 +85,30 @@ void Bezier::moveEnd(const glm::vec2 & delta) {
 std::vector<Bezier> Bezier::subdivide(int subdivisions) {
 
     std::vector<Bezier> beziers;
-    float delta = 1.f/(subdivisions + 1.f);
+	size_t n = subdivisions + 1;
+    float delta = 1.f/n;
     glm::vec2 a1 = a;
+	glm::vec2 ac1 = ac;
+	glm::vec2 bc1 = bc;
+	glm::vec2 b1 = b;
 
-    beziers.resize(subdivisions+1);
+    beziers.resize(n);
 
-    for (int i=1; i<=subdivisions; i++) {
-        float u = i * delta;
+    for (int i=0; i<n; i++) {
+        float u = 1.f / (n-i);
 
         // De Casteljau's Algorithm
-        glm::vec2 p10 = glm::mix(a, ac, u);
-        glm::vec2 p11 = glm::mix(ac, bc, u);
-        glm::vec2 p12 = glm::mix(bc, b, u);
+        glm::vec2 p10 = glm::mix(a1, ac1, u);
+        glm::vec2 p11 = glm::mix(ac1, bc1, u);
+        glm::vec2 p12 = glm::mix(bc1, b1, u);
         glm::vec2 p20 = glm::mix(p10, p11, u);
         glm::vec2 p21 = glm::mix(p11, p12, u);
         glm::vec2 p30 = glm::mix(p20, p21, u);
 
-        beziers[i-1].set(a1, p10, p20, p30);
+        beziers[i].set(a1, p10, p20, p30);
         a1 = p30;
-
-        if (i == subdivisions) {
-            beziers[i].set(a1, p21, p12, b);
-        }
+		ac1 = p21;
+		bc1 = p12;
     }
     return beziers;
 }
