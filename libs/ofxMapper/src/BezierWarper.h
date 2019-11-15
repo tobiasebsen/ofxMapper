@@ -49,8 +49,8 @@ public:
 	void updateHandles(vector<WarpHandle> & handles);
 	void moveHandle(ControlHandle & handle, const glm::vec2 & delta);
 	void notifyHandles();
-	//vector<ControlHandle> getHandleControls(WarpHandle & handle);
-	//PatchJunction BezierWarper::getHandlePatches(WarpHandle & handle);
+
+	using HasHandlesT<ControlHandle>::moveHandle;
 
 	ofParameter<int> bezierResolution = {"Bezier resolution", 20, 0, 40};
 	ofParameter<int> subCols = { "Sub-bezier columns", 20, 0, 40 };

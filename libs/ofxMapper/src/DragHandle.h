@@ -13,16 +13,23 @@ public:
 class HasHandles {
 public:
 	virtual size_t getNumHandles() const = 0;
-	//virtual DragHandle * getHandle(size_t) = 0;
-	//virtual const DragHandle * getHandle(size_t) const = 0;
+	
 	virtual bool selectHandle(const glm::vec2 & p, float radius) = 0;
+	bool selectHandle(float x, float y, float radius) {
+		return selectHandle(glm::vec2(x, y), radius);
+	}
+
 	virtual bool grabHandle(const glm::vec2 & p, float radius) = 0;
+
+	virtual bool moveHandle(const glm::vec2 & delta) = 0;
+
 	virtual bool dragHandle(const glm::vec2 & delta) = 0;
+
 	virtual void releaseHandle() = 0;
 };
 
 template<typename T = DragHandle>
-class HasHandlesT : HasHandles {
+class HasHandlesT : public HasHandles {
 public:
 	vector<T> & getHandles() {
 		return handles;
@@ -49,6 +56,23 @@ public:
 		return selected;
 	}
 
+	virtual bool moveHandle(const glm::vec2 & delta) {
+		bool move = false;
+		for (T & h : handles) {
+			if (h.selected) {
+				moveHandle(h, delta);
+				move = true;
+			}
+		}
+		if (move) {
+			notifyHandles();
+		}
+		return move;
+	}
+	bool moveHandle(float x, float y) {
+		return moveHandle(glm::vec2(x, y));
+	}
+
 	bool grabHandle(const glm::vec2 & p, float radius) {
 		bool grabbed = false;
 		for (T & h : handles) {
@@ -64,6 +88,10 @@ public:
 		}
 		return grabbed;
 	}
+	bool grabHandle(float x, float y, float radius) {
+		return grabHandle(glm::vec2(x, y), radius);
+	}
+
 
 	bool dragHandle(const glm::vec2 & delta) {
 		bool drag = false;
@@ -77,6 +105,9 @@ public:
 			notifyHandles();
 		}
 		return drag;
+	}
+	bool dragHandle(float dx, float dy) {
+		return dragHandle(glm::vec2(dx, dy));
 	}
 
 	virtual void moveHandle(T & handle, const glm::vec2 & delta) = 0;

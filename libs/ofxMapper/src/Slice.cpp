@@ -1,5 +1,6 @@
 #include "Slice.h"
 
+using namespace ofxMapper;
 
 //--------------------------------------------------------------
 Slice::Slice() {
@@ -156,7 +157,7 @@ bool Slice::selectInput(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
-bool Slice::selectWarper(const glm::vec2 & p) {
+bool Slice::select(const glm::vec2 & p) {
 	selected = warper->select(p);
     return selected;
 }
@@ -217,12 +218,22 @@ bool Slice::grabHandle(const glm::vec2 & p, float radius) {
 	return grabbed;
 }
 
+//--------------------------------------------------------------
 bool Slice::dragHandle(const glm::vec2 & delta) {
 	bool dragged = HasHandlesT<WarpHandle>::dragHandle(delta);
 	if (bezierEnabled) {
 		bezierWarper.dragHandle(delta);
 	}
 	return dragged;
+}
+
+//--------------------------------------------------------------
+bool Slice::moveHandle(const glm::vec2 & delta) {
+	bool moved = HasHandlesT<WarpHandle>::moveHandle(delta);
+	if (bezierEnabled) {
+		bezierWarper.moveHandle(delta);
+	}
+	return moved;
 }
 
 //--------------------------------------------------------------

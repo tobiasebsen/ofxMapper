@@ -1,5 +1,7 @@
 #include "Screen.h"
 
+using namespace ofxMapper;
+
 //--------------------------------------------------------------
 Screen::Screen() {
 	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
@@ -60,6 +62,7 @@ void Screen::draw(const ofRectangle & rect) {
 	fbo.draw(rect);
 }
 
+//--------------------------------------------------------------
 const ofFbo & Screen::getFbo() const {
 	return fbo;
 }
@@ -97,6 +100,7 @@ SlicePtr Screen::addSlice(string name, const ofRectangle & inputRect, const ofRe
 	return slice;
 }
 
+//--------------------------------------------------------------
 SlicePtr Screen::addSlice(string name, const ofRectangle & inputRect) {
 	return addSlice(name, inputRect, getScreenRect());
 }
@@ -106,6 +110,7 @@ void Screen::removeSlice(size_t sliceIndex) {
 	slices.erase(slices.begin() + sliceIndex);
 }
 
+//--------------------------------------------------------------
 bool Screen::selectSliceInput(const glm::vec2 & p) {
 	bool selection = false;
 	for (SlicePtr slice : slices) {
@@ -166,7 +171,7 @@ void Screen::deselectMasks() {
 }
 
 //--------------------------------------------------------------
-bool Screen::grabSlice(const glm::vec2 & p, float radius) {
+bool Screen::grabSliceHandle(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (SlicePtr slice : slices) {
 		if (slice->editEnabled && slice->grabHandle(p, radius)) {
@@ -175,7 +180,7 @@ bool Screen::grabSlice(const glm::vec2 & p, float radius) {
 		}
 	}
 	for (SlicePtr slice : slices) {
-		if (slice->selectWarper(p)) {
+		if (slice->select(p)) {
 			selected = true;
 		}
 	}
@@ -183,7 +188,24 @@ bool Screen::grabSlice(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool Screen::grabMask(const glm::vec2 & p, float radius) {
+bool ofxMapper::Screen::dragSliceHandle(const glm::vec2 & delta) {
+	bool drag = false;
+	for (auto & slice : slices) {
+		if (slice->dragHandle(delta))
+			drag = true;
+	}
+	return drag;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Screen::releaseSliceHandle() {
+	for (auto & slice : slices) {
+		slice->releaseHandle();
+	}
+}
+
+//--------------------------------------------------------------
+bool Screen::grabMaskHandle(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (MaskPtr mask : masks) {
 		if (mask->editEnabled && mask->grabHandle(p, radius)) {
@@ -200,42 +222,76 @@ bool Screen::grabMask(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-void Screen::grab(const glm::vec2 & p, float radius) {
-
-	if (grabMask(p, radius)) {
-		deselectSliceWarpers();
-		return;
-	}
-	grabSlice(p, radius);
-}
-
-//--------------------------------------------------------------
-void Screen::drag(const glm::vec2 & delta) {
-	bool drag = false;
+bool ofxMapper::Screen::dragMaskHandle(const glm::vec2 & delta) {
+	bool dragged = false;
 	for (MaskPtr mask : masks) {
-		if (mask->editEnabled && mask->dragHandle(delta)) {
-			drag = true;
+		if (mask->dragHandle(delta)) {
+			dragged = true;
 		}
 	}
-	if (drag)
-		return;
-
-	for (SlicePtr slice : slices) {
-		if (slice->editEnabled && slice->dragHandle(delta)) {
-			drag = true;
-		}
-	}
+	return dragged;
 }
 
 //--------------------------------------------------------------
-void Screen::release() {
+void ofxMapper::Screen::releaseMaskHandle() {
 	for (MaskPtr mask : masks) {
 		mask->releaseHandle();
 	}
+}
 
-	for (SlicePtr slice : slices) {
-		slice->releaseHandle();
+//--------------------------------------------------------------
+void Screen::drawHandles(int handleSize, int handleType) {
+
+	float radius = handleSize / 2;
+
+	ofPushStyle();
+	for (auto & slice : slices) {
+		auto & handles = slice->getHandles();
+		for (auto & h : handles) {
+			
+			if (h.selected)
+				ofFill();
+			else
+				ofNoFill();
+
+			if (handleType == HANDLE_SQUARE)
+				ofDrawRectangle(h.position.x - radius, h.position.y - radius, handleSize, handleSize);
+			if (handleType == HANDLE_CIRCLE)
+				ofDrawCircle(h.position, handleSize);
+		}
 	}
+	for (auto & mask : masks) {
+		auto & handles = mask->getHandles();
+		for (auto & h : handles) {
+
+			if (h.selected)
+				ofFill();
+			else
+				ofNoFill();
+
+			if (handleType == HANDLE_SQUARE)
+				ofDrawRectangle(h.position.x - radius, h.position.y - radius, handleSize, handleSize);
+			if (handleType == HANDLE_CIRCLE)
+				ofDrawCircle(h.position, handleSize);
+		}
+	}
+	ofPopStyle();
+}
+
+//--------------------------------------------------------------
+bool ofxMapper::Screen::grabHandles(const glm::vec2 & p, float radius) {
+	return grabMaskHandle(p, radius) || grabSliceHandle(p, radius);
+}
+
+//--------------------------------------------------------------
+bool ofxMapper::Screen::dragHandles(const glm::vec2 & delta) {
+	return dragMaskHandle(delta) || dragSliceHandle(delta);
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Screen::releaseHandles() {
+	releaseMaskHandle();
+	releaseSliceHandle();
 }
 
 //--------------------------------------------------------------

@@ -32,6 +32,9 @@ void LinearWarper::setVertices(shared_ptr<Vertices> v) {
 //--------------------------------------------------------------
 VerticesPtr LinearWarper::subdivide(int subdivCols, int subdivRows) {
 
+	subdivCols = subdivCols > 0 ? subdivCols + 1 : 1;
+	subdivRows = subdivRows > 0 ? subdivRows + 1 : 1;
+	
     int subWidth = (vertices->width-1) * subdivCols + 1;
     int subHeight = (vertices->height-1) * subdivRows + 1;
     shared_ptr<Vertices> subvertices = shared_ptr<Vertices>(new Vertices(subWidth, subHeight));

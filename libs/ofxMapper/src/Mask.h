@@ -23,12 +23,8 @@ public:
 	void moveHandle(DragHandle & handle, const glm::vec2 & delta);
 	void notifyHandles();
 
-	//ofParameter<string> name = { "Name:", "" };
-    //ofParameter<bool> enabled = { "Enabled", true };
-    //ofParameter<bool> editEnabled = { "Edit", false };
     ofParameter<bool> closed = { "Closed", true };
     ofParameter<bool> inverted = { "Inverted", false };
-    //ofParameter<bool> remove = { "Remove", false };
     ofParameterGroup group = { "Mask" , name, enabled, editEnabled, closed, inverted, remove };
 
     //ofParameter<bool> selected = { "Selected", false };
