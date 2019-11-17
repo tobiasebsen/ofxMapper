@@ -18,8 +18,6 @@ uniform float edgeBottom;// Bottom edge procentage. Range 0-1
 uniform float p;        // Blend curve. Typical 1-3
 uniform float a;        // Blend center brightness. Default 0.5
 uniform float gamma;    // Gamma. Blend region inverse-gamma to compensate for projectors own gamma. Default 1
-uniform float black;    // Black level. Value added to the non-overlapping part to compensate for projector black level. Default 0
-uniform vec3 gain;      // Color correction gain. Applied to the entire image to compensate for projector color bias. Default (1,1,1)
 
 vec4 softEdge(vec4 sample, vec2 uv) {
 
@@ -37,14 +35,8 @@ vec4 softEdge(vec4 sample, vec2 uv) {
 	else
 		f = 1.0 - (1.0 - a) * pow(2.0 * (1.0 - x), p);
 
-	// Apply color correction gain
-	sample.rgb = sample.rgb * gain;
-
 	// Apply blend function brightness
 	sample.rgb = sample.rgb * pow(f, 1.0/gamma);
-
-	// Apply black level
-	//sample = f * black + sample * (1.0 - black);
 
 	return sample;
 }
@@ -61,32 +53,13 @@ void main() {
 }
 );
 
-ofShader SoftEdge::shader;
-
 string SoftEdge::getShaderSource() {
 	return softEdgeFrag;
 }
 
-void SoftEdge::init() {
-	//ofSetLogLevel(OF_LOG_VERBOSE);
-	shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragHeader + softEdgeFrag + softEdgeMain);
-	shader.linkProgram();
-	//ofSetLogLevel(OF_LOG_NOTICE);
-}
-
-void SoftEdge::begin() {
-	if (!shader.isLoaded())
-		init();
-	shader.begin();
-}
-
-void SoftEdge::end() {
-	shader.end();
-}
-
-void SoftEdge::setUniforms(ofShader & shader, const ofRectangle * inputRect) {
-	shader.setUniform2f("pos", inputRect->position);
-	shader.setUniform2f("size", inputRect->width, inputRect->height);
+void SoftEdge::setUniforms(const ofShader & shader, const ofRectangle & inputRect) {
+	shader.setUniform2f("pos", inputRect.position);
+	shader.setUniform2f("size", inputRect.width, inputRect.height);
 	shader.setUniform1f("edgeTop", edgeTop);
 	shader.setUniform1f("edgeBottom", edgeBottom);
 	shader.setUniform1f("edgeLeft", edgeLeft);
@@ -96,8 +69,4 @@ void SoftEdge::setUniforms(ofShader & shader, const ofRectangle * inputRect) {
 	shader.setUniform1f("gamma", gamma);
 	shader.setUniform1f("black", 0);
 	shader.setUniform3f("gain", 1.f, 1.0f, 1.f);
-}
-
-void SoftEdge::setUniforms(const ofRectangle * inputRect) {
-	setUniforms(shader, inputRect);
 }

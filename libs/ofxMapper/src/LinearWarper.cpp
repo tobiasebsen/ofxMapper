@@ -1,24 +1,23 @@
 #include "LinearWarper.h"
 #include "LinearShader.h"
+#include "ColorCorrect.h"
 
 ofShader LinearWarper::shader;
-ofShader LinearWarper::shaderSoftEdge;
 
 //--------------------------------------------------------------
 LinearWarper::LinearWarper() {
-    inputRect = shared_ptr<ofRectangle>(new ofRectangle);
     rows = 0;
     cols = 0;
 }
 
 //--------------------------------------------------------------
-void LinearWarper::setInputRect(shared_ptr<ofRectangle> rect) {
+void LinearWarper::setInputRect(ofRectangle & rect) {
     inputRect = rect;
     updateTexCoords();
 }
 
 //--------------------------------------------------------------
-void LinearWarper::setVertices(shared_ptr<Vertices> v) {
+void LinearWarper::setVertices(VerticesPtr v) {
 
     vertices = v;
 
@@ -102,10 +101,10 @@ void LinearWarper::updateTexCoords() {
 
     vector<glm::vec2> texCoords;
 
-    glm::vec2 offset(inputRect->x, inputRect->y);
+    glm::vec2 offset(inputRect.x, inputRect.y);
     glm::vec2 delta;
-    delta.s = inputRect->width / cols;
-    delta.t = inputRect->height / rows;
+    delta.s = inputRect.width / cols;
+    delta.t = inputRect.height / rows;
     
     for (size_t r = 0; r < rows; r++) {
         for (size_t c = 0; c < cols; c++) {
@@ -145,15 +144,12 @@ void LinearWarper::drawOutline() {
 //--------------------------------------------------------------
 void LinearWarper::drawMesh() {
     
-    if (!shader.isLoaded())
-        loadShader();
-
-    shader.begin();
+    getShader().begin();
 	setShaderAttributes(shader);
 
     ofGetCurrentRenderer()->draw(mesh, OF_MESH_FILL, false, false, false);
     
-    shader.end();
+    getShader().end();
 }
 
 //--------------------------------------------------------------
@@ -169,18 +165,14 @@ void LinearWarper::setShaderAttributes(ofShader & s) {
 }
 
 //--------------------------------------------------------------
-void LinearWarper::drawMesh(SoftEdgePtr softEdge) {
-
-	if (!shaderSoftEdge.isLoaded())
-		loadShaderSoftEdge();
-
-	shaderSoftEdge.begin();
-	setShaderAttributes(shaderSoftEdge);
-	softEdge->setUniforms(shaderSoftEdge, inputRect.get());
-
-	ofGetCurrentRenderer()->draw(mesh, OF_MESH_FILL, false, false, false);
-
-	shaderSoftEdge.end();
+const ofShader & LinearWarper::getShader() const {
+    if (!shader.isLoaded()) {
+        string fragSource = fragHeader + SoftEdge::getShaderSource() + ColorCorrect::getShaderSource() + quadCoordFrag + quadCoordMain;
+        shader.setupShaderFromSource(GL_VERTEX_SHADER, vertSource);
+        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragSource);
+        shader.linkProgram();
+    }
+    return shader;
 }
 
 //--------------------------------------------------------------
@@ -293,20 +285,6 @@ void LinearWarper::makeMesh() {
             mesh.addIndices(indices);
         }
     }
-}
-
-//--------------------------------------------------------------
-void LinearWarper::loadShader() {
-    shader.setupShaderFromSource(GL_VERTEX_SHADER, vertSource);
-    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragHeader + quadCoordFrag + quadCoordMain);
-    shader.linkProgram();
-}
-
-void LinearWarper::loadShaderSoftEdge() {
-	string fragSource = fragHeader + SoftEdge::getShaderSource() + quadCoordFrag + quadCoordSoftEdgeMain;
-	shaderSoftEdge.setupShaderFromSource(GL_VERTEX_SHADER, vertSource);
-	shaderSoftEdge.setupShaderFromSource(GL_FRAGMENT_SHADER, fragSource);
-	shaderSoftEdge.linkProgram();
 }
 
 //--------------------------------------------------------------

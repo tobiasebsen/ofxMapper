@@ -8,16 +8,16 @@
 #include "BezierWarper.h"
 #include "LinearWarper.h"
 #include "SoftEdge.h"
+#include "ColorCorrect.h"
 
 namespace ofxMapper {
 
 	class Slice : public Element, public HasHandlesT<WarpHandle> {
 	public:
-		Slice();
 		~Slice();
 
 		// Input rectangle
-		void setInputRect(ofRectangle inputRect);
+		void setInputRect(const ofRectangle & inputRect);
 		ofRectangle getInputRect();
 
 		// Vertices
@@ -64,7 +64,10 @@ namespace ofxMapper {
 
 
 		// Soft edge
-		SoftEdgePtr getSoftEdge();
+		SoftEdge & getSoftEdge();
+    
+        // Color correction
+        ColorCorrect & getColorCorrect();
 
 
 		// Parameters
@@ -80,20 +83,14 @@ namespace ofxMapper {
 		ofParameter<bool> colorEnabled = { "Color correction", false };
 		ofParameterGroup warperGroup = { "Warper", name, enabled, editEnabled, bezierEnabled, colorEnabled, softEdgeEnabled };
 
-		ofParameter<float> colorBrightness = { "Brightness", 0, -1, 1 };
-		ofParameter<float> colorContrast = { "Contrast", 0, -1, 1 };
-		ofParameter<float> colorRed = { "Red", 0, -1, 1 };
-		ofParameter<float> colorGreen = { "Green", 0, -1, 1 };
-		ofParameter<float> colorBlue = { "Blue", 0, -1, 1 };
-		ofParameterGroup colorGroup = { "Color correction", colorBrightness, colorContrast, colorRed, colorGreen, colorBlue };
-
 		void inputRectChanged(int&);
 		void bezierChanged(bool&);
 
 	private:
-		shared_ptr<ofRectangle> inputRect;
+        friend class Screen;
+        Slice(float x, float y, float width, float height);
 
-		shared_ptr<Vertices> vertices;
+		VerticesPtr vertices;
 
 		Warper * warper;
 		BezierWarper bezierWarper;
@@ -101,7 +98,8 @@ namespace ofxMapper {
 
 		vector<ofRectangle> blendRects;
 
-		SoftEdgePtr softEdge;
+		SoftEdge softEdge;
+        ColorCorrect colorCorrect;
 	};
 
 	typedef shared_ptr<Slice> SlicePtr;

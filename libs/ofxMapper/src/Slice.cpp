@@ -3,12 +3,12 @@
 using namespace ofxMapper;
 
 //--------------------------------------------------------------
-Slice::Slice() {
+Slice::Slice(float x, float y, float width, float height) {
 	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
 
 	warper = &linearWarper;
 
-	inputRect = shared_ptr<ofRectangle>(new ofRectangle);
+	ofRectangle inputRect = getInputRect();
 	bezierWarper.setInputRect(inputRect);
     linearWarper.setInputRect(inputRect);
 
@@ -18,8 +18,6 @@ Slice::Slice() {
 	inputHeight.addListener(this, &Slice::inputRectChanged);
     
     bezierEnabled.addListener(this, &Slice::bezierChanged);
-
-	softEdge = shared_ptr<SoftEdge>(new SoftEdge);
 }
 
 //--------------------------------------------------------------
@@ -31,17 +29,16 @@ Slice::~Slice() {
 }
 
 //--------------------------------------------------------------
-void Slice::setInputRect(ofRectangle inputRect) {
-	this->inputRect->x = inputRect.x;
-	this->inputRect->y = inputRect.y;
-	this->inputRect->width = inputRect.width;
-	this->inputRect->height = inputRect.height;
-	inputX.set(inputRect.x); // trigger event
+void Slice::setInputRect(const ofRectangle & inputRect) {
+    inputX.setWithoutEventNotifications(inputRect.x);
+    inputY.setWithoutEventNotifications(inputRect.y);
+    inputWidth.setWithoutEventNotifications(inputRect.width);
+    inputHeight.set(inputRect.height); // trigger event
 }
 
 //--------------------------------------------------------------
 ofRectangle Slice::getInputRect() {
-	return ofRectangle(inputRect->x, inputRect->y, inputRect->width, inputRect->height);
+	return ofRectangle(inputX, inputY, inputWidth, inputHeight);
 }
 
 //--------------------------------------------------------------
@@ -139,10 +136,18 @@ void Slice::drawSubGrid() {
 
 //--------------------------------------------------------------
 void Slice::draw() {
-	if (softEdgeEnabled)
-		warper->drawMesh(softEdge);
-	else
-		warper->drawMesh();
+    
+    const ofShader & shader = warper->getShader();
+
+    shader.begin();
+    softEdge.setUniforms(shader, getInputRect());
+    if (colorEnabled)
+        colorCorrect.setUniforms(shader);
+    else
+        colorCorrect.setUniformsZero(shader);
+    shader.end();
+
+    warper->drawMesh();
 }
 
 //--------------------------------------------------------------
@@ -248,19 +253,19 @@ void Slice::notifyHandles() {
 
 //--------------------------------------------------------------
 void Slice::clearBlendRects() {
-	softEdge->edgeTop = 0;
-	softEdge->edgeBottom = 0;
-	softEdge->edgeLeft = 0;
-	softEdge->edgeRight = 0;
+	softEdge.edgeTop = 0;
+	softEdge.edgeBottom = 0;
+	softEdge.edgeLeft = 0;
+	softEdge.edgeRight = 0;
     blendRects.clear();
 }
 
 //--------------------------------------------------------------
 bool Slice::addBlendRect(const ofRectangle & rect) {
-    if (rect.getLeft() == inputRect->getLeft())
-        softEdge->edgeLeft = rect.width / inputRect->width;
-    if (rect.getRight() == inputRect->getRight())
-        softEdge->edgeRight = rect.width / inputRect->width;
+    if (rect.getLeft() == inputX)
+        softEdge.edgeLeft = rect.width / inputWidth;
+    if (rect.getRight() == inputX + inputWidth)
+        softEdge.edgeRight = rect.width / inputWidth;
 
     blendRects.push_back(rect);
     return true;
@@ -272,17 +277,19 @@ vector<ofRectangle> & Slice::getBlendRects() {
 }
 
 //--------------------------------------------------------------
-SoftEdgePtr Slice::getSoftEdge() {
+SoftEdge & Slice::getSoftEdge() {
 	return softEdge;
 }
 
 //--------------------------------------------------------------
+ColorCorrect & Slice::getColorCorrect() {
+    return colorCorrect;
+}
+
+//--------------------------------------------------------------
 void Slice::inputRectChanged(int &) {
-	inputRect->x = inputX;
-	inputRect->y = inputY;
-	inputRect->width = inputWidth;
-	inputRect->height = inputHeight;
-	warper->updateTexCoords();
+    ofRectangle inputRect = getInputRect();
+    warper->setInputRect(inputRect);
 }
 
 //--------------------------------------------------------------
@@ -293,5 +300,7 @@ void Slice::bezierChanged(bool &) {
         warper = &linearWarper;
 
     warper->updatePatches();
-    warper->updateTexCoords();
+    
+    ofRectangle inputRect = getInputRect();
+    warper->setInputRect(inputRect);
 }

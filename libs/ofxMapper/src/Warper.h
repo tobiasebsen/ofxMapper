@@ -8,8 +8,8 @@
 
 class Warper {
 public:
-	virtual void setInputRect(shared_ptr<ofRectangle> rect) = 0;
-	virtual void setVertices(shared_ptr<Vertices> vertices) = 0;
+	virtual void setInputRect(ofRectangle & rect) = 0;
+	virtual void setVertices(VerticesPtr vertices) = 0;
 
     virtual VerticesPtr subdivide(int cols, int rows) = 0;
 
@@ -20,7 +20,8 @@ public:
 	virtual void drawSubGrid() = 0;
 	virtual void drawOutline() = 0;
 	virtual void drawMesh() = 0;
-	virtual void drawMesh(SoftEdgePtr softEdge) = 0;
+
+    virtual const ofShader & getShader() const = 0;
 
 	virtual bool select(const glm::vec2 & p) = 0;
 

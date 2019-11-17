@@ -5,13 +5,9 @@
 class SoftEdge {
 public:
 	static string getShaderSource();
-	static void init();
 
-	void begin();
-	void end();
-
-	void setUniforms(ofShader & shader, const ofRectangle * inputRect);
-	void setUniforms(const ofRectangle * inputRect);
+	void setUniforms(const ofShader & shader, const ofRectangle & inputRect);
+    void setUniforms(const ofShader & shader);
 
 	ofParameter<float> edgeLeft = { "Left", 0, 0, 1 };
 	ofParameter<float> edgeRight = { "Right", 0, 0, 1 };
@@ -23,8 +19,6 @@ public:
 	ofParameter<float> power = { "Power", 2, 0.1, 7 };
 	ofParameterGroup group = {"Soft Edge", gamma, luminance, power};
 
-	static ofShader shader;
-private:
 };
 
 typedef shared_ptr<SoftEdge> SoftEdgePtr;

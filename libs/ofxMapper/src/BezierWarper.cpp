@@ -1,4 +1,28 @@
 #include "BezierWarper.h"
+#include "ColorCorrect.h"
+
+#define STR(a) #a
+
+static string fragHeader = "#version 120\n"
+STR(
+    uniform sampler2DRect tex;
+);
+
+static string fragMain =
+STR(
+    void main() {
+        vec2 texCoord = gl_TexCoord[0].st;
+        vec2 uv = (texCoord - pos) / size;
+        vec4 sample = texture2DRect(tex, texCoord);
+        sample = colorCorrect(sample);
+        sample = softEdge(sample, uv);
+        
+        gl_FragColor = sample;
+    }
+);
+
+
+ofShader BezierWarper::shader;
 
 ofParameter<int> BezierWarper::adaptiveBezierRes = {"Bezier span", 50, 10, 100};
 ofParameter<int> BezierWarper::adaptiveSubRes = {"Sub-bezier span", 50, 10, 200};
@@ -18,9 +42,9 @@ BezierWarper::~BezierWarper() {
 }
 
 //--------------------------------------------------------------
-void BezierWarper::setVertices(shared_ptr<Vertices> vertices) {
+void BezierWarper::setVertices(VerticesPtr v) {
 
-	this->vertices = vertices;
+	vertices = v;
 
     cols = (vertices->width - 1) / 3;
 	rows = (vertices->height - 1) / 3;
@@ -185,7 +209,7 @@ void BezierWarper::updatePatches() {
 }
 
 //--------------------------------------------------------------
-void BezierWarper::setInputRect(shared_ptr<ofRectangle> inputRect) {
+void BezierWarper::setInputRect(ofRectangle & inputRect) {
 	this->inputRect = inputRect;
     updateTexCoords();
 }
@@ -306,10 +330,10 @@ void BezierWarper::updateTexCoords() {
 
 	vector<glm::vec2> texCoords;
 
-	glm::vec2 offset(inputRect->x, inputRect->y);
+	glm::vec2 offset(inputRect.x, inputRect.y);
 	glm::vec2 delta;
-	delta.s = inputRect->width / cols;
-	delta.t = inputRect->height / rows;
+	delta.s = inputRect.width / cols;
+	delta.t = inputRect.height / rows;
 
 	for (size_t r = 0; r < rows; r++) {
 		for (size_t c = 0; c < cols; c++) {
@@ -355,15 +379,19 @@ void BezierWarper::drawOutline() {
 
 //--------------------------------------------------------------
 void BezierWarper::drawMesh() {
+    getShader().begin();
 	mesh.draw();
+    getShader().end();
 }
 
 //--------------------------------------------------------------
-void BezierWarper::drawMesh(SoftEdgePtr softEdge) {
-	softEdge->begin();
-	softEdge->setUniforms(inputRect.get());
-	mesh.draw();
-	softEdge->end();
+const ofShader & BezierWarper::getShader() const {
+    if (!shader.isLoaded()) {
+        string fragSource = fragHeader + SoftEdge::getShaderSource() + ColorCorrect::getShaderSource() + fragMain;
+        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragSource);
+        shader.linkProgram();
+    }
+    return shader;
 }
 
 //--------------------------------------------------------------

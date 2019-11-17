@@ -113,14 +113,10 @@ ScreenPtr ofxMapper::Mapper::addScreen(int width, int height) {
 
 //--------------------------------------------------------------
 ScreenPtr Mapper::addScreen(string name, int width, int height, bool enabled) {
-	size_t screenIndex = screens.size();
-	shared_ptr<Screen> screen(new Screen);
+    screens.emplace_back(new Screen(width, height));
+    ScreenPtr screen = screens.back();
 	screen->name = name;
-	screen->width.setWithoutEventNotifications(width);
-	screen->height.set(height);
 	screen->enabled = enabled;
-	//screen->remove.addListener(this, &ofApp::screenRemovePressed);
-	screens.push_back(screen);
 	return screen;
 }
 
@@ -129,7 +125,6 @@ void Mapper::removeScreen() {
 	for (auto it = screens.begin(); it != screens.end();) {
 		auto p = it[0];
 		if (p->remove) {
-			//p->remove.removeListener(this, &ofApp::screenRemovePressed);
 			it = screens.erase(it);
 		}
 		else {
@@ -259,10 +254,10 @@ bool Mapper::load(string filePath) {
 					slice->enabled = sl.getEnabled();
 					slice->softEdgeEnabled = sl.getSoftEdgeEnabled();
 
-					SoftEdgePtr softEdge = slice->getSoftEdge();
-					softEdge->power = sl.getSoftEdgePower();
-					softEdge->luminance = sl.getSoftEdgeLuminance();
-					softEdge->gamma = sl.getSoftEdgeGamma();
+					SoftEdge & softEdge = slice->getSoftEdge();
+					softEdge.power = sl.getSoftEdgePower();
+					softEdge.luminance = sl.getSoftEdgeLuminance();
+					softEdge.gamma = sl.getSoftEdgeGamma();
 
 					slice->setInputRect(inputRect);
 					slice->bezierEnabled = sl.getWarperMode() == "PM_BEZIER";

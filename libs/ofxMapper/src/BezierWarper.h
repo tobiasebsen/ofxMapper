@@ -26,8 +26,8 @@ public:
 	BezierWarper();
 	~BezierWarper();
 
-	void setVertices(shared_ptr<Vertices> vertices);
-	void setInputRect(shared_ptr<ofRectangle> inputRect);
+    void setInputRect(ofRectangle & inputRect);
+	void setVertices(VerticesPtr vertices);
     
     VerticesPtr subdivide(int cols, int rows);
 
@@ -38,7 +38,8 @@ public:
 	void drawSubGrid();
 	void drawOutline();
     void drawMesh();
-	void drawMesh(SoftEdgePtr softEdge);
+    
+    const ofShader & getShader() const;
     
     bool select(const glm::vec2 & p);
 
@@ -73,9 +74,8 @@ private:
     void drawBezier(Bezier & bezier);
     void drawBeziers(vector<Bezier> & beziers);
 
-	shared_ptr<ofRectangle> inputRect;
-
-	shared_ptr<Vertices> vertices;
+	ofRectangle inputRect;
+	VerticesPtr vertices;
 
     size_t cols;
     size_t rows;
@@ -84,4 +84,5 @@ private:
 	ofPolyline outline;
 
     ofMesh mesh;
+    static ofShader shader;
 };

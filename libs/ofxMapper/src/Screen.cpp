@@ -3,12 +3,14 @@
 using namespace ofxMapper;
 
 //--------------------------------------------------------------
-Screen::Screen() {
+Screen::Screen(int w, int h) {
 	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
-	width.addListener(this, &Screen::resolutionChanged);
+
+    width.addListener(this, &Screen::resolutionChanged);
 	height.addListener(this, &Screen::resolutionChanged);
-	int dummy;
-	resolutionChanged(dummy);
+
+    width.setWithoutEventNotifications(w);
+    height.set(h);
 }
 
 //--------------------------------------------------------------
@@ -84,19 +86,20 @@ SlicePtr Screen::getSlice(size_t sliceIndex) {
 
 //--------------------------------------------------------------
 SlicePtr Screen::addSlice(float width, float height) {
-	return addSlice("Slice " + ofToString(slices.size()+1), ofRectangle(0, 0, width, height));
+	return addSlice(0, 0, width, height);
+}
+
+//--------------------------------------------------------------
+SlicePtr Screen::addSlice(float x, float y, float width, float height) {
+    return addSlice("Slice " + ofToString(slices.size()+1), ofRectangle(x, y, width, height));
 }
 
 //--------------------------------------------------------------
 SlicePtr Screen::addSlice(string name, const ofRectangle & inputRect, const ofRectangle & outputRect) {
-	SlicePtr slice(new Slice);
+	slices.emplace_back(new Slice(inputRect.x, inputRect.y, inputRect.width, inputRect.height));
+    SlicePtr slice = slices.back();
 	slice->name = name;
-	slice->inputX = inputRect.x;
-	slice->inputY = inputRect.y;
-	slice->inputWidth = inputRect.width;
-	slice->inputHeight = inputRect.height;
-	slices.push_back(slice);
-	slices.back()->createVertices(outputRect);
+	slice->createVertices(outputRect);
 	return slice;
 }
 

@@ -93,20 +93,6 @@ STR(
 
 static std::string quadCoordMain =
 STR(
-	void main() {
-
-		// Get normalized quad UV
-		vec2 uv = quadCoord();
-
-		// Bilinear interpolation to texture coordinates
-		vec2 texCoord = mix(mix(st1, st2, uv.x), mix(st4, st3, uv.x), uv.y);
-
-		gl_FragColor = texture2DRect(tex, texCoord);
-	}
-);
-
-static std::string quadCoordSoftEdgeMain =
-STR(
 void main() {
 
 	// Get normalized quad UV
@@ -115,8 +101,10 @@ void main() {
 	// Bilinear interpolation to texture coordinates
 	vec2 texCoord = mix(mix(st1, st2, uv.x), mix(st4, st3, uv.x), uv.y);
 	vec4 sample = texture2DRect(tex, texCoord);
+    sample = colorCorrect(sample);
+    sample = softEdge(sample, uv);
 
-    gl_FragColor = softEdge(sample, uv);
+    gl_FragColor = sample;
 }
 );
 

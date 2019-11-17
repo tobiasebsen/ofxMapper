@@ -8,8 +8,6 @@ namespace ofxMapper {
 
 	class Screen {
 	public:
-
-		Screen();
 		~Screen();
 
 		// Frame buffer
@@ -26,6 +24,7 @@ namespace ofxMapper {
 		size_t getNumSlices() const;
 		SlicePtr getSlice(size_t sliceIndex);
 		SlicePtr addSlice(float width, float height);
+        SlicePtr addSlice(float x, float y, float width, float height);
 		SlicePtr addSlice(string name, const ofRectangle & inputRect);
 		SlicePtr addSlice(string name, const ofRectangle & inputRect, const ofRectangle & outputRect);
 		void removeSlice(size_t sliceIndex);
@@ -66,7 +65,10 @@ namespace ofxMapper {
 
 	private:
 
-		void resolutionChanged(int &);
+        friend class Mapper;
+        Screen(int width, int height);
+
+        void resolutionChanged(int &);
 
 		ofFbo fbo;
 		vector<SlicePtr> slices;

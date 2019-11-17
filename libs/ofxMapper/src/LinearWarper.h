@@ -8,9 +8,9 @@ class LinearWarper : public Warper {
 public:
     LinearWarper();
 
-    void setInputRect(shared_ptr<ofRectangle> rect);
-    void setVertices(shared_ptr<Vertices> vertices);
-    
+    void setInputRect(ofRectangle & rect);
+    void setVertices(VerticesPtr vertices);
+
     VerticesPtr subdivide(int cols, int rows);
 
     void updatePatches();
@@ -20,7 +20,8 @@ public:
     void drawSubGrid();
     void drawOutline();
     void drawMesh();
-	void drawMesh(SoftEdgePtr softEdge);
+    
+    const ofShader & getShader() const;
 
     bool select(const glm::vec2 & p);
 
@@ -31,16 +32,13 @@ private:
 
     void makeOutline();
     void makeMesh();
-    static void loadShader();
-	static void loadShaderSoftEdge();
     
 	void setShaderAttributes(ofShader & s);
     float * getVertexPtr(size_t cornerIndex);
     float * getTexCoordPtr(size_t cornerIndex);
     
-    shared_ptr<ofRectangle> inputRect;
-
-    shared_ptr<Vertices> vertices;
+    ofRectangle inputRect;
+    VerticesPtr vertices;
     
     size_t cols;
     size_t rows;
@@ -49,6 +47,5 @@ private:
     ofPolyline outline;
 
     static ofShader shader;
-	static ofShader shaderSoftEdge;
     ofMesh mesh;
 };
