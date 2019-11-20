@@ -8,6 +8,10 @@ Slice::Slice(float x, float y, float width, float height) {
 
 	warper = &linearWarper;
 
+	inputX = x;
+	inputY = y;
+	inputWidth = width;
+	inputHeight = height;
 	ofRectangle inputRect = getInputRect();
 	bezierWarper.setInputRect(inputRect);
     linearWarper.setInputRect(inputRect);
