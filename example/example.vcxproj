@@ -180,6 +180,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\libs\ofxMapper\src\ColorCorrect.cpp" />
     <ClCompile Include="..\libs\ofxMapper\src\ResolumeFile.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="..\..\..\addons\ofxMapper\libs\ofxMapper\src\SoftEdge.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\libs\ofxMapper\src\ColorCorrect.h" />
     <ClInclude Include="..\libs\ofxMapper\src\DragHandle.h" />
     <ClInclude Include="..\libs\ofxMapper\src\Element.h" />
     <ClInclude Include="..\libs\ofxMapper\src\ResolumeFile.h" />
