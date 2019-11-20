@@ -148,6 +148,8 @@ void LinearWarper::drawMesh() {
 	setShaderAttributes(shader);
 
     ofGetCurrentRenderer()->draw(mesh, OF_MESH_FILL, false, false, false);
+
+	disableShaderAttributes(shader);
     
     getShader().end();
 }
@@ -162,6 +164,18 @@ void LinearWarper::setShaderAttributes(ofShader & s) {
 	s.setAttribute2fv("t2", getTexCoordPtr(1), sizeof(CornerVertexAttrib));
 	s.setAttribute2fv("t3", getTexCoordPtr(2), sizeof(CornerVertexAttrib));
 	s.setAttribute2fv("t4", getTexCoordPtr(3), sizeof(CornerVertexAttrib));
+}
+
+//--------------------------------------------------------------
+void LinearWarper::disableShaderAttributes(ofShader & s) {
+	glDisableVertexAttribArray(s.getAttributeLocation("c1"));
+	glDisableVertexAttribArray(s.getAttributeLocation("c2"));
+	glDisableVertexAttribArray(s.getAttributeLocation("c3"));
+	glDisableVertexAttribArray(s.getAttributeLocation("c4"));
+	glDisableVertexAttribArray(s.getAttributeLocation("t1"));
+	glDisableVertexAttribArray(s.getAttributeLocation("t2"));
+	glDisableVertexAttribArray(s.getAttributeLocation("t3"));
+	glDisableVertexAttribArray(s.getAttributeLocation("t4"));
 }
 
 //--------------------------------------------------------------

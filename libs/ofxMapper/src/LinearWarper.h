@@ -34,7 +34,8 @@ private:
     void makeMesh();
     
 	void setShaderAttributes(ofShader & s);
-    float * getVertexPtr(size_t cornerIndex);
+	void disableShaderAttributes(ofShader & s);
+	float * getVertexPtr(size_t cornerIndex);
     float * getTexCoordPtr(size_t cornerIndex);
     
     ofRectangle inputRect;
