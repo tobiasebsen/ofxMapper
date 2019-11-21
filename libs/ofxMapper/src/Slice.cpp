@@ -177,11 +177,11 @@ bool ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
 void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & delta) {
 	switch (handle.side) {
 	case RectHandle::SIDE_LEFT:
-		inputX = handle.position.x + delta.x;
+		inputX.setWithoutEventNotifications(handle.position.x + delta.x);
 		inputWidth -= delta.x;
 		break;
 	case RectHandle::SIDE_TOP:
-		inputY = handle.position.y + delta.y;
+		inputY.setWithoutEventNotifications(handle.position.y + delta.y);
 		inputHeight -= delta.y;
 		break;
 	case RectHandle::SIDE_RIGHT:
@@ -191,7 +191,6 @@ void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & de
 		inputHeight += delta.y;
 		break;
 	}
-	updateInputHandles();
 }
 
 //--------------------------------------------------------------

@@ -162,7 +162,13 @@ void Mapper::deselectAllExcept(ScreenPtr except) {
 void Mapper::grabInputHandle(const glm::vec2 & p, float radius) {
 	for (auto & screen : screens) {
 		if (screen->enabled) {
-			screen->grabInputHandle(p, radius);
+			if (screen->grabInputHandle(p, radius))
+				return;
+		}
+	}
+	for (auto & screen : screens) {
+		if (screen->enabled) {
+			screen->selectSliceInput(p);
 		}
 	}
 }

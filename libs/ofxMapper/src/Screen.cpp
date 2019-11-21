@@ -132,11 +132,6 @@ bool ofxMapper::Screen::grabInputHandle(const glm::vec2 & p, float radius) {
 			return true;
 		}
 	}
-	for (SlicePtr slice : slices) {
-		if (slice->selectInput(p)) {
-			selected = true;
-		}
-	}
 	return selected;
 }
 
