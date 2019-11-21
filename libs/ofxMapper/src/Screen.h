@@ -29,6 +29,10 @@ namespace ofxMapper {
 		SlicePtr addSlice(string name, const ofRectangle & inputRect, const ofRectangle & outputRect);
 		void removeSlice(size_t sliceIndex);
 		bool selectSliceInput(const glm::vec2 & p);
+		bool grabInputHandle(const glm::vec2 & p, float radius);
+		bool dragInputHandle(const glm::vec2 & delta);
+		void releaseInputHandle();
+
 		void deselectSliceWarpers();
 		void deselectMasks();
 		bool grabSliceHandle(const glm::vec2 & p, float radius);

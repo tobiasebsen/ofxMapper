@@ -20,6 +20,8 @@ public:
     void drawSubGrid();
     void drawOutline();
     void drawMesh();
+
+	glm::vec2 getCenter();
     
     const ofShader & getShader() const;
 

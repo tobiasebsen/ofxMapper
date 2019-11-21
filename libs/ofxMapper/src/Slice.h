@@ -10,6 +10,13 @@
 #include "SoftEdge.h"
 #include "ColorCorrect.h"
 
+class RectHandle : public DragHandle {
+public:
+	enum {
+		SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM, SIDE_LEFT
+	} side;
+};
+
 namespace ofxMapper {
 
 	class Slice : public Element, public HasHandlesT<WarpHandle> {
@@ -19,6 +26,13 @@ namespace ofxMapper {
 		// Input rectangle
 		void setInputRect(const ofRectangle & inputRect);
 		ofRectangle getInputRect();
+		void drawInputRect();
+		void updateInputHandles();
+		vector<RectHandle> & getInputHandles();
+		bool grabInputHandle(const glm::vec2 & p, float radius);
+		bool dragInputHandle(const glm::vec2 & delta);
+		void moveInputHandle(RectHandle & handle, const glm::vec2 & delta);
+		void releaseInputHandle();
 
 		// Vertices
 		void setVertices(vector<glm::vec2> & vertices, size_t controlWidth, size_t controlHeight);
@@ -31,9 +45,8 @@ namespace ofxMapper {
 		// Draw
 		virtual void draw();
 		virtual void drawOutline();
-		void drawInputRect();
-		void drawGrid();
-		void drawSubGrid();
+
+		virtual glm::vec2 getCenter();
 
 		bool select(const glm::vec2 & p);
 		bool selectInput(const glm::vec2 & p);
@@ -89,6 +102,8 @@ namespace ofxMapper {
 	private:
         friend class Screen;
         Slice(float x, float y, float width, float height);
+
+		vector<RectHandle> inputHandles;
 
 		VerticesPtr vertices;
 

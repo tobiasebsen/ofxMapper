@@ -124,6 +124,41 @@ bool Screen::selectSliceInput(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
+bool ofxMapper::Screen::grabInputHandle(const glm::vec2 & p, float radius) {
+	bool selected = false;
+	for (SlicePtr slice : slices) {
+		if (slice->grabInputHandle(p, radius)) {
+			slice->selected = true;
+			return true;
+		}
+	}
+	for (SlicePtr slice : slices) {
+		if (slice->selectInput(p)) {
+			selected = true;
+		}
+	}
+	return selected;
+}
+
+//--------------------------------------------------------------
+bool ofxMapper::Screen::dragInputHandle(const glm::vec2 & delta) {
+	bool dragged = false;
+	for (SlicePtr slice : slices) {
+		if (slice->dragInputHandle(delta)) {
+			dragged = true;
+		}
+	}
+	return dragged;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Screen::releaseInputHandle() {
+	for (SlicePtr slice : slices) {
+		slice->releaseHandle();
+	}
+}
+
+//--------------------------------------------------------------
 void Screen::deselectSliceWarpers() {
     for (SlicePtr slice : slices) {
         slice->selected = false;

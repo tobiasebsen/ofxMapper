@@ -16,8 +16,10 @@ public:
 
     virtual void draw();
     virtual void drawOutline();
+
+	virtual glm::vec2 getCenter();
     
-    bool select(const glm::vec2 & p);
+    virtual bool select(const glm::vec2 & p);
   
 	bool removeHandleSelected();
 	void moveHandle(DragHandle & handle, const glm::vec2 & delta);

@@ -61,7 +61,9 @@ namespace ofxMapper {
 
 		void drawInputRects(bool drawDisabled = false, bool drawDeselected = true);
 		void drawInputRectsSelected(bool drawDisabled = false);
-		void sliceInputSelect(glm::vec2 p);
+		void grabInputHandle(const glm::vec2 & p, float radius);
+		void dragInputHandle(const glm::vec2 & delta);
+		void releaseInputHandle();
 		void updateBlendRects();
 		void drawBlendRects();
 

@@ -52,6 +52,10 @@ void Mask::drawOutline() {
     poly[0].draw();
 }
 
+glm::vec2 Mask::getCenter() {
+	return poly[0].getCentroid2D();
+}
+
 bool Mask::select(const glm::vec2 &p) {
     selected = poly[0].inside(p.x, p.y);
     return selected;

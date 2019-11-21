@@ -21,6 +21,8 @@ public:
 	virtual void drawOutline() = 0;
 	virtual void drawMesh() = 0;
 
+	virtual glm::vec2 getCenter() = 0;
+
     virtual const ofShader & getShader() const = 0;
 
 	virtual bool select(const glm::vec2 & p) = 0;

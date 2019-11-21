@@ -103,10 +103,12 @@ size_t Mapper::getNumScreens() const {
 	return screens.size();
 }
 
+//--------------------------------------------------------------
 ScreenPtr Mapper::getScreen(size_t screenIndex) {
 	return screens[screenIndex];
 }
 
+//--------------------------------------------------------------
 ScreenPtr ofxMapper::Mapper::addScreen(int width, int height) {
 	return addScreen("Screen " + ofToString(screens.size()+1), width, height);
 }
@@ -157,10 +159,28 @@ void Mapper::deselectAllExcept(ScreenPtr except) {
 }
 
 //--------------------------------------------------------------
-void Mapper::sliceInputSelect(glm::vec2 p) {
+void Mapper::grabInputHandle(const glm::vec2 & p, float radius) {
 	for (auto & screen : screens) {
 		if (screen->enabled) {
-			screen->selectSliceInput(p);
+			screen->grabInputHandle(p, radius);
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Mapper::dragInputHandle(const glm::vec2 & delta) {
+	for (auto & screen : screens) {
+		if (screen->enabled) {
+			screen->dragInputHandle(delta);
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Mapper::releaseInputHandle() {
+	for (auto & screen : screens) {
+		if (screen->enabled) {
+			screen->releaseInputHandle();
 		}
 	}
 }

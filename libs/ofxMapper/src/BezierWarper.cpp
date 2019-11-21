@@ -385,6 +385,11 @@ void BezierWarper::drawMesh() {
 }
 
 //--------------------------------------------------------------
+glm::vec2 BezierWarper::getCenter() {
+	return outline.getCentroid2D();
+}
+
+//--------------------------------------------------------------
 const ofShader & BezierWarper::getShader() const {
     if (!shader.isLoaded()) {
         string fragSource = fragHeader + SoftEdge::getShaderSource() + ColorCorrect::getShaderSource() + fragMain;

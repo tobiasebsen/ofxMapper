@@ -155,6 +155,11 @@ void LinearWarper::drawMesh() {
 }
 
 //--------------------------------------------------------------
+glm::vec2 LinearWarper::getCenter() {
+	return outline.getCentroid2D();
+}
+
+//--------------------------------------------------------------
 void LinearWarper::setShaderAttributes(ofShader & s) {
 	s.setAttribute2fv("c1", getVertexPtr(0), sizeof(CornerVertexAttrib));
 	s.setAttribute2fv("c2", getVertexPtr(1), sizeof(CornerVertexAttrib));

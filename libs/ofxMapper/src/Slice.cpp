@@ -8,20 +8,17 @@ Slice::Slice(float x, float y, float width, float height) {
 
 	warper = &linearWarper;
 
-	inputX = x;
-	inputY = y;
-	inputWidth = width;
-	inputHeight = height;
-	ofRectangle inputRect = getInputRect();
-	bezierWarper.setInputRect(inputRect);
-    linearWarper.setInputRect(inputRect);
-
 	inputX.addListener(this, &Slice::inputRectChanged);
 	inputY.addListener(this, &Slice::inputRectChanged);
 	inputWidth.addListener(this, &Slice::inputRectChanged);
 	inputHeight.addListener(this, &Slice::inputRectChanged);
     
     bezierEnabled.addListener(this, &Slice::bezierChanged);
+
+	ofRectangle inputRect(x, y, width, height);
+	setInputRect(inputRect);
+	bezierWarper.setInputRect(inputRect);
+	linearWarper.setInputRect(inputRect);
 }
 
 //--------------------------------------------------------------
@@ -129,13 +126,84 @@ void Slice::drawInputRect() {
 }
 
 //--------------------------------------------------------------
-void Slice::drawGrid() {
-	warper->drawGrid();
+void ofxMapper::Slice::updateInputHandles() {
+	inputHandles.resize(4);
+	inputHandles[0].side = RectHandle::SIDE_TOP;
+	inputHandles[0].position = glm::vec2(inputX + inputWidth / 2, inputY);
+	inputHandles[1].side = RectHandle::SIDE_RIGHT;
+	inputHandles[1].position = glm::vec2(inputX + inputWidth, inputY + inputHeight / 2);
+	inputHandles[2].side = RectHandle::SIDE_BOTTOM;
+	inputHandles[2].position = glm::vec2(inputX + inputWidth / 2, inputY + inputHeight);
+	inputHandles[3].side = RectHandle::SIDE_LEFT;
+	inputHandles[3].position = glm::vec2(inputX, inputY + inputHeight / 2);
 }
 
 //--------------------------------------------------------------
-void Slice::drawSubGrid() {
-	warper->drawSubGrid();
+vector<RectHandle> & Slice::getInputHandles() {
+	return inputHandles;
+}
+
+//--------------------------------------------------------------
+bool ofxMapper::Slice::grabInputHandle(const glm::vec2 & p, float radius) {
+	bool grabbed = false;
+	for (auto & h : inputHandles) {
+		if (glm::distance(p, h.position) <= radius) {
+			grabbed = true;
+			h.selected = true;
+			h.dragging = true;
+		}
+		else {
+			h.selected = false;
+			h.dragging = false;
+		}
+	}
+	return grabbed;
+}
+
+//--------------------------------------------------------------
+bool ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
+	bool dragged = false;
+	for (auto & h : inputHandles) {
+		if (h.dragging) {
+			moveInputHandle(h, delta);
+			dragged = true;
+
+		}
+	}
+	return dragged;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & delta) {
+	switch (handle.side) {
+	case RectHandle::SIDE_LEFT:
+		inputX = handle.position.x + delta.x;
+		inputWidth -= delta.x;
+		break;
+	case RectHandle::SIDE_TOP:
+		inputY = handle.position.y + delta.y;
+		inputHeight -= delta.y;
+		break;
+	case RectHandle::SIDE_RIGHT:
+		inputWidth += delta.x;
+		break;
+	case RectHandle::SIDE_BOTTOM:
+		inputHeight += delta.y;
+		break;
+	}
+	updateInputHandles();
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Slice::releaseInputHandle() {
+	for (auto & h : inputHandles) {
+		h.dragging = false;
+	}
+}
+
+//--------------------------------------------------------------
+glm::vec2 Slice::getCenter() {
+	return getInputRect().getCenter();
 }
 
 //--------------------------------------------------------------
@@ -294,6 +362,7 @@ ColorCorrect & Slice::getColorCorrect() {
 void Slice::inputRectChanged(int &) {
     ofRectangle inputRect = getInputRect();
     warper->setInputRect(inputRect);
+	updateInputHandles();
 }
 
 //--------------------------------------------------------------
