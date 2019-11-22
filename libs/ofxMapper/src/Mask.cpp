@@ -21,6 +21,29 @@ void Mask::setPoints(vector<glm::vec2> &points) {
 	update();
 }
 
+void ofxMapper::Mask::addPoint(const glm::vec2 & p) {
+	DragHandle h;
+	h.position = p;
+	handles.push_back(h);
+	poly[0].addVertex(glm::vec3(h.position, 0));
+}
+
+void ofxMapper::Mask::setPoint(const glm::vec2 & p, int index) {
+	if (index < 0)
+		index = handles.size() - 1;
+	handles[index].position = p;
+	poly[0].getVertices().back() = glm::vec3(p, 0);
+}
+
+void ofxMapper::Mask::removePoint(int index) {
+	if (index < 0)
+		index = handles.size() - 1;
+	if (index >= 0 && index < handles.size()) {
+		handles.erase(handles.begin() + index);
+		update();
+	}
+}
+
 void Mask::setScreenRect(const ofRectangle &rect) {
     this->screenRect = rect;
 }

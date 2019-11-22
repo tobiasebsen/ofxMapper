@@ -12,6 +12,9 @@ namespace ofxMapper {
 
 		void setScreenRect(const ofRectangle & rect);
 		void setPoints(vector<glm::vec2> & points);
+		void addPoint(const glm::vec2 & p);
+		void setPoint(const glm::vec2 & p, int index = -1);
+		void removePoint(int index = -1);
 
 		void update();
 		void updateMesh();
