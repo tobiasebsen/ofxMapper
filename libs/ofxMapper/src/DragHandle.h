@@ -23,7 +23,7 @@ public:
 
 	virtual bool moveHandle(const glm::vec2 & delta) = 0;
 
-	virtual bool dragHandle(const glm::vec2 & delta) = 0;
+	virtual void dragHandle(const glm::vec2 & delta) = 0;
 
 	virtual void releaseHandle() = 0;
 };
@@ -57,20 +57,20 @@ public:
 	}
 
 	virtual bool moveHandle(const glm::vec2 & delta) {
-		bool move = false;
+		bool moved = false;
 		for (T & h : handles) {
 			if (h.selected) {
 				moveHandle(h, delta);
-				move = true;
+				moved = true;
 			}
 		}
-		if (move) {
+		if (moved) {
 			notifyHandles();
 		}
-		return move;
+		return moved;
 	}
-	bool moveHandle(float x, float y) {
-		return moveHandle(glm::vec2(x, y));
+	void moveHandle(float x, float y) {
+		moveHandle(glm::vec2(x, y));
 	}
 
 	bool grabHandle(const glm::vec2 & p, float radius) {
@@ -93,7 +93,7 @@ public:
 	}
 
 
-	bool dragHandle(const glm::vec2 & delta) {
+	void dragHandle(const glm::vec2 & delta) {
 		bool drag = false;
 		for (T & h : handles) {
 			if (h.dragging) {
@@ -104,10 +104,9 @@ public:
 		if (drag) {
 			notifyHandles();
 		}
-		return drag;
 	}
-	bool dragHandle(float dx, float dy) {
-		return dragHandle(glm::vec2(dx, dy));
+	void dragHandle(float dx, float dy) {
+		dragHandle(glm::vec2(dx, dy));
 	}
 
 	virtual void moveHandle(T & handle, const glm::vec2 & delta) = 0;

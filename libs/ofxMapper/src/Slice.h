@@ -30,9 +30,10 @@ namespace ofxMapper {
 		void updateInputHandles();
 		vector<RectHandle> & getInputHandles();
 		bool grabInputHandle(const glm::vec2 & p, float radius);
-		bool dragInputHandle(const glm::vec2 & delta);
+		void dragInputHandle(const glm::vec2 & delta);
 		void moveInputHandle(RectHandle & handle, const glm::vec2 & delta);
 		void releaseInputHandle();
+		bool selectInput(const glm::vec2 & p);
 
 		// Vertices
 		void setVertices(vector<glm::vec2> & vertices, size_t controlWidth, size_t controlHeight);
@@ -48,8 +49,8 @@ namespace ofxMapper {
 
 		virtual glm::vec2 getCenter();
 
-		bool select(const glm::vec2 & p);
-		bool selectInput(const glm::vec2 & p);
+		virtual bool select(const glm::vec2 & p);
+		virtual void move(const glm::vec2 & delta);
 
 
 		// Warper
@@ -61,7 +62,7 @@ namespace ofxMapper {
 		// Handles
 		void updateHandles();
 		bool grabHandle(const glm::vec2 & p, float radius);
-		bool dragHandle(const glm::vec2 & delta);
+		void dragHandle(const glm::vec2 & delta);
 		bool moveHandle(const glm::vec2 & delta);
 		void moveHandle(WarpHandle & handle, const glm::vec2 & delta);
 		void notifyHandles();

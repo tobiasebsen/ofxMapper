@@ -161,16 +161,12 @@ bool ofxMapper::Slice::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
-	bool dragged = false;
+void ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
 	for (auto & h : inputHandles) {
 		if (h.dragging) {
 			moveInputHandle(h, delta);
-			dragged = true;
-
 		}
 	}
-	return dragged;
 }
 
 //--------------------------------------------------------------
@@ -239,6 +235,17 @@ bool Slice::select(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
+void ofxMapper::Slice::move(const glm::vec2 & delta) {
+	size_t n = vertices->width * vertices->height;
+	glm::vec2 * v = vertices->data;
+	for (int i = 0; i < n; i++) {
+		v[i] += delta;
+	}
+	update();
+	updateHandles();
+}
+
+//--------------------------------------------------------------
 Warper * Slice::getWarper() {
 	return warper;
 }
@@ -295,19 +302,19 @@ bool Slice::grabHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool Slice::dragHandle(const glm::vec2 & delta) {
-	bool dragged = HasHandlesT<WarpHandle>::dragHandle(delta);
+void Slice::dragHandle(const glm::vec2 & delta) {
+	HasHandlesT<WarpHandle>::dragHandle(delta);
 	if (bezierEnabled) {
 		bezierWarper.dragHandle(delta);
 	}
-	return dragged;
 }
 
 //--------------------------------------------------------------
 bool Slice::moveHandle(const glm::vec2 & delta) {
 	bool moved = HasHandlesT<WarpHandle>::moveHandle(delta);
 	if (bezierEnabled) {
-		bezierWarper.moveHandle(delta);
+		if (bezierWarper.moveHandle(delta))
+			moved = true;
 	}
 	return moved;
 }

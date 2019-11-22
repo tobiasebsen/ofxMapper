@@ -1,5 +1,7 @@
 #include "Mask.h"
 
+using namespace ofxMapper;
+
 ofTessellator tessellator;
 
 Mask::Mask() {
@@ -59,6 +61,13 @@ glm::vec2 Mask::getCenter() {
 bool Mask::select(const glm::vec2 &p) {
     selected = poly[0].inside(p.x, p.y);
     return selected;
+}
+
+void Mask::move(const glm::vec2 & delta) {
+	for (DragHandle & h : handles) {
+		h.position += delta;
+	}
+	update();
 }
 
 bool Mask::removeHandleSelected() {

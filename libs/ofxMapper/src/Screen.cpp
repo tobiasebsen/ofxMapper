@@ -136,14 +136,10 @@ bool ofxMapper::Screen::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::dragInputHandle(const glm::vec2 & delta) {
-	bool dragged = false;
+void ofxMapper::Screen::dragInputHandle(const glm::vec2 & delta) {
 	for (SlicePtr slice : slices) {
-		if (slice->dragInputHandle(delta)) {
-			dragged = true;
-		}
+		slice->dragInputHandle(delta);
 	}
-	return dragged;
 }
 
 //--------------------------------------------------------------
@@ -204,7 +200,7 @@ void Screen::deselectMasks() {
 }
 
 //--------------------------------------------------------------
-bool Screen::grabSliceHandle(const glm::vec2 & p, float radius) {
+bool Screen::grabSlice(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (SlicePtr slice : slices) {
 		if (slice->editEnabled && slice->grabHandle(p, radius)) {
@@ -213,7 +209,11 @@ bool Screen::grabSliceHandle(const glm::vec2 & p, float radius) {
 		}
 	}
 	for (SlicePtr slice : slices) {
-		if (slice->select(p)) {
+		if (slice->editEnabled) {
+			if (slice->grab(p))
+				selected = true;
+		}
+		else if (slice->select(p)) {
 			selected = true;
 		}
 	}
@@ -221,24 +221,33 @@ bool Screen::grabSliceHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::dragSliceHandle(const glm::vec2 & delta) {
-	bool drag = false;
-	for (auto & slice : slices) {
-		if (slice->dragHandle(delta))
-			drag = true;
+void ofxMapper::Screen::moveSlice(const glm::vec2 & delta) {
+	for (SlicePtr slice : slices) {
+		if (slice->selected && slice->editEnabled) {
+			if (!slice->moveHandle(delta))
+				slice->move(delta);
+		}
 	}
-	return drag;
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Screen::releaseSliceHandle() {
+void ofxMapper::Screen::dragSlice(const glm::vec2 & delta) {
+	for (auto & slice : slices) {
+		slice->dragHandle(delta);
+		slice->drag(delta);
+	}
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Screen::releaseSlice() {
 	for (auto & slice : slices) {
 		slice->releaseHandle();
+		slice->release();
 	}
 }
 
 //--------------------------------------------------------------
-bool Screen::grabMaskHandle(const glm::vec2 & p, float radius) {
+bool Screen::grabMask(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (MaskPtr mask : masks) {
 		if (mask->editEnabled && mask->grabHandle(p, radius)) {
@@ -247,7 +256,11 @@ bool Screen::grabMaskHandle(const glm::vec2 & p, float radius) {
 		}
 	}
 	for (MaskPtr mask : masks) {
-		if (mask->select(p)) {
+		if (mask->editEnabled) {
+			if (mask->grab(p))
+				selected = true;
+		}
+		else if (mask->select(p)) {
 			selected = true;
 		}
 	}
@@ -255,20 +268,28 @@ bool Screen::grabMaskHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::dragMaskHandle(const glm::vec2 & delta) {
-	bool dragged = false;
+void ofxMapper::Screen::moveMask(const glm::vec2 & delta) {
 	for (MaskPtr mask : masks) {
-		if (mask->dragHandle(delta)) {
-			dragged = true;
+		if (mask->selected && mask->editEnabled) {
+			if (!mask->moveHandle(delta))
+				mask->move(delta);
 		}
 	}
-	return dragged;
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Screen::releaseMaskHandle() {
+void ofxMapper::Screen::dragMask(const glm::vec2 & delta) {
+	for (MaskPtr mask : masks) {
+		mask->dragHandle(delta);
+		mask->drag(delta);
+	}
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Screen::releaseMask() {
 	for (MaskPtr mask : masks) {
 		mask->releaseHandle();
+		mask->release();
 	}
 }
 
@@ -312,19 +333,20 @@ void Screen::drawHandles(int handleSize, int handleType) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::grabHandles(const glm::vec2 & p, float radius) {
-	return grabMaskHandle(p, radius) || grabSliceHandle(p, radius);
+bool ofxMapper::Screen::grab(const glm::vec2 & p, float radius) {
+	return grabMask(p, radius) || grabSlice(p, radius);
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::dragHandles(const glm::vec2 & delta) {
-	return dragMaskHandle(delta) || dragSliceHandle(delta);
+void ofxMapper::Screen::drag(const glm::vec2 & delta) {
+	dragMask(delta);
+	dragSlice(delta);
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Screen::releaseHandles() {
-	releaseMaskHandle();
-	releaseSliceHandle();
+void ofxMapper::Screen::release() {
+	releaseMask();
+	releaseSlice();
 }
 
 //--------------------------------------------------------------

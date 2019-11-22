@@ -30,14 +30,13 @@ namespace ofxMapper {
 		void removeSlice(size_t sliceIndex);
 		bool selectSliceInput(const glm::vec2 & p);
 		bool grabInputHandle(const glm::vec2 & p, float radius);
-		bool dragInputHandle(const glm::vec2 & delta);
+		void dragInputHandle(const glm::vec2 & delta);
 		void releaseInputHandle();
-
 		void deselectSliceWarpers();
-		void deselectMasks();
-		bool grabSliceHandle(const glm::vec2 & p, float radius);
-		bool dragSliceHandle(const glm::vec2 & delta);
-		void releaseSliceHandle();
+		bool grabSlice(const glm::vec2 & p, float radius);
+		void moveSlice(const glm::vec2 & delta);
+		void dragSlice(const glm::vec2 & delta);
+		void releaseSlice();
 
 		// Masks
 		vector<MaskPtr> & getMasks();
@@ -45,16 +44,20 @@ namespace ofxMapper {
 		MaskPtr getMask(size_t maskIndex);
 		MaskPtr addMask(string name);
 		void removeMaskSelected();
-		bool grabMaskHandle(const glm::vec2 & p, float radius);
-		bool dragMaskHandle(const glm::vec2 & delta);
-		void releaseMaskHandle();
+		void deselectMasks();
+		bool grabMask(const glm::vec2 & p, float radius);
+		void moveMask(const glm::vec2 & delta);
+		void dragMask(const glm::vec2 & delta);
+		void releaseMask();
 
 		// Handles
 		enum { HANDLE_SQUARE, HANDLE_CIRCLE };
 		void drawHandles(int handleSize = 10, int handleType = HANDLE_SQUARE);
-		bool grabHandles(const glm::vec2 & p, float radius);
-		bool dragHandles(const glm::vec2 & delta);
-		void releaseHandles();
+
+		// Interaction
+		bool grab(const glm::vec2 & p, float radius);
+		void drag(const glm::vec2 & delta);
+		void release();
 
 		// Parameters
 		string uniqueId;
