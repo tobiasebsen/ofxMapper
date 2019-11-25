@@ -22,10 +22,11 @@ bool ResolumeFile::isValid(string versionName) {
 }
 
 void ResolumeFile::setVersion(string name) {
-	if (!state.getChild("versionInfo")) {
-		ofXml version = state.appendChild("versionInfo");
-		version.setAttribute("name", name);
+	ofXml version;
+	if (!(version = state.getChild("versionInfo"))) {
+		version = state.appendChild("versionInfo");
 	}
+	version.setAttribute("name", name);
 }
 
 ofRectangle ResolumeFile::getCompositionSize() {
