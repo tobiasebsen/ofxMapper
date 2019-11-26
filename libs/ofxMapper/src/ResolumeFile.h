@@ -142,7 +142,7 @@ inline void ResolumeFile::setParam(ofXml & x, string params, string name, const 
 	}
 	ofXml p;
 	if (!(p = prms.findFirst("./Param" + paramType + "[@name='" + name + "']"))) {
-		p = prms.appendChild("Param");
+		p = prms.appendChild("Param" + paramType);
 		p.setAttribute("name", name);
 	}
 	p.setAttribute("value", value);
