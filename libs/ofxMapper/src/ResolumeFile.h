@@ -10,8 +10,8 @@ public:
 	bool load(string filePath);
 	bool save(string filePath);
 
-	bool isValid(string versionName = "Resolume Arena");
-	void setVersion(string name = "Resolume Arena");
+	bool isValid(string versionName);
+	void setVersion(string name);
 
 	ofRectangle getCompositionSize();
 	void setCompositionSize(int width, int height);
@@ -51,6 +51,8 @@ public:
         int loadMasks();
 		int getNumMasks();
         Mask getMask(int maskIndex);
+		Mask getMask(string uniqueId);
+		Mask addMask(string uniqueId);
 
     private:
 		ofXml xml;
@@ -98,8 +100,16 @@ public:
 		string getUniqueId();
         
         string getName();
+		void setName(string name);
         bool getEnabled();
+		void setEnabled(bool enabled);
+
+		bool getInverted();
+		void setInverted(bool inverted);
+		bool getClosed();
+
         vector<glm::vec2> getPoints();
+		void setPoints(const vector<glm::vec2> & points, bool closed);
     private:
         ofXml xml;
     };

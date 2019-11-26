@@ -239,6 +239,7 @@ void Mapper::drawBlendRects() {
     }
 }
 
+//--------------------------------------------------------------
 void ofxMapper::Mapper::clear() {
 	compFile.reset();
 	screens.clear();
@@ -247,71 +248,77 @@ void ofxMapper::Mapper::clear() {
 //--------------------------------------------------------------
 bool Mapper::load(string filePath) {
 
-	//ResolumeFile resolume(xml);
 	compFile = shared_ptr<ResolumeFile>(new ResolumeFile);
 	bool loaded = compFile->load(filePath);
 
-	if (loaded) {
+	if (!loaded) {
+		ofLogError("ofxMapper") << "Unable to load file: " << filePath;
+		compFile.reset();
+		return false;
+	}
 
-		if (compFile->isValid() || compFile->isValid("ofxMapper")) {
-			// Composition
-			ofRectangle r = compFile->getCompositionSize();
-			setCompSize(r.width, r.height);
+	if (!compFile->isValid("Resolume Arena") && !compFile->isValid("ofxMapper")) {
+		ofLogError("ofxMapper") << "File not valid: " << filePath;
+		compFile.reset();
+		return false;
+	}
 
-			// Screens
-			screens.clear();
-			int nscreens = compFile->loadScreens();
-			for (int i = 0; i < nscreens; i++) {
-				ResolumeFile::Screen sc = compFile->getScreen(i);
-				ofRectangle res = sc.getSize();
-				ScreenPtr screen = addScreen(res.width, res.height);
-				screen->uniqueId = sc.getUniqueId();
-				screen->name = sc.getName();
-				screen->enabled = sc.getEnabled();
+	// Composition
+	ofRectangle r = compFile->getCompositionSize();
+	setCompSize(r.width, r.height);
 
-				// Slices
-				int nslices = sc.getNumSlices();
-				for (int j = 0; j < nslices; j++) {
-					ResolumeFile::Slice sl = sc.getSlice(j);
-					string name = sl.getName();
-					ofRectangle inputRect = sl.getInputRect();
-					SlicePtr slice = screen->addSlice(name, inputRect);
-					slice->uniqueId = sl.getUniqueId();
-					slice->enabled = sl.getEnabled();
-					slice->softEdgeEnabled = sl.getSoftEdgeEnabled();
+	// Screens
+	screens.clear();
+	int nscreens = compFile->loadScreens();
+	for (int i = 0; i < nscreens; i++) {
+		ResolumeFile::Screen sc = compFile->getScreen(i);
+		ofRectangle res = sc.getSize();
+		ScreenPtr screen = addScreen(res.width, res.height);
+		screen->uniqueId = sc.getUniqueId();
+		screen->name = sc.getName();
+		screen->enabled = sc.getEnabled();
 
-					SoftEdge & softEdge = slice->getSoftEdge();
-					softEdge.power = sl.getSoftEdgePower();
-					softEdge.luminance = sl.getSoftEdgeLuminance();
-					softEdge.gamma = sl.getSoftEdgeGamma();
+		// Slices
+		int nslices = sc.getNumSlices();
+		for (int j = 0; j < nslices; j++) {
+			ResolumeFile::Slice sl = sc.getSlice(j);
+			string name = sl.getName();
+			ofRectangle inputRect = sl.getInputRect();
+			SlicePtr slice = screen->addSlice(name, inputRect);
+			slice->uniqueId = sl.getUniqueId();
+			slice->enabled = sl.getEnabled();
+			slice->softEdgeEnabled = sl.getSoftEdgeEnabled();
 
-					slice->setInputRect(inputRect);
-					slice->bezierEnabled = sl.getWarperMode() == "PM_BEZIER";
+			SoftEdge & softEdge = slice->getSoftEdge();
+			softEdge.power = sl.getSoftEdgePower();
+			softEdge.luminance = sl.getSoftEdgeLuminance();
+			softEdge.gamma = sl.getSoftEdgeGamma();
 
-					int w = 0, h = 0;
-					sl.getWarperDim(w, h);
-					auto vertices = sl.getWarperVertices();
-					slice->setVertices(vertices, w, h);
-				}
+			slice->setInputRect(inputRect);
+			slice->bezierEnabled = sl.getWarperMode() == "PM_BEZIER";
 
-				// Masks
-				int nmasks = sc.getNumMasks();
-				for (int j = 0; j < nmasks; j++) {
-					ResolumeFile::Mask msk = sc.getMask(j);
-					string name = msk.getName();
-					auto points = msk.getPoints();
+			int w = 0, h = 0;
+			sl.getWarperDim(w, h);
+			auto vertices = sl.getWarperVertices();
+			slice->setVertices(vertices, w, h);
+		}
 
-					MaskPtr mask = screen->addMask(name);
-					mask->uniqueId = msk.getUniqueId();
-					mask->enabled = msk.getEnabled();
-					mask->setPoints(points);
-				}
-			}
-			compFileName = ofFilePath::getFileName(filePath);
-			return true;
+		// Masks
+		int nmasks = sc.getNumMasks();
+		for (int j = 0; j < nmasks; j++) {
+			ResolumeFile::Mask msk = sc.getMask(j);
+			string name = msk.getName();
+			auto points = msk.getPoints();
+
+			MaskPtr mask = screen->addMask(name);
+			mask->uniqueId = msk.getUniqueId();
+			mask->enabled = msk.getEnabled();
+			mask->setPoints(points);
 		}
 	}
-	return false;
+	compFileName = ofFilePath::getFileName(filePath);
+
+	return true;
 }
 
 //--------------------------------------------------------------
@@ -341,7 +348,16 @@ void ofxMapper::Mapper::save(string filePath) {
 		}
 
 		for (auto & mask : screen->getMasks()) {
+			ResolumeFile::Mask msk = scr.getMask(mask->uniqueId);
+			msk.setName(mask->name);
+			msk.setEnabled(mask->enabled);
+			msk.setInverted(mask->inverted);
 
+			vector<glm::vec2> points;
+			for (auto & h : mask->getHandles()) {
+				points.push_back(h.position);
+			}
+			msk.setPoints(points, mask->closed);
 		}
 
 		scr.setSize(screen->width, screen->height);

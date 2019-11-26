@@ -306,6 +306,25 @@ ResolumeFile::Mask ResolumeFile::Screen::getMask(int maskIndex) {
     return masks[maskIndex];
 }
 
+ResolumeFile::Mask ResolumeFile::Screen::getMask(string uniqueId) {
+	for (auto & m : masks) {
+		if (m.getAttribute("uniqueId").getValue() == uniqueId)
+			return m;
+	}
+	return addMask(uniqueId);
+
+}
+
+ResolumeFile::Mask ResolumeFile::Screen::addMask(string uniqueId) {
+	ofXml layers;
+	if (!(layers = xml.getChild("layers"))) {
+		layers = xml.appendChild("layers");
+	}
+	ofXml mask = layers.appendChild("Mask");
+	mask.setAttribute("uniqueId", uniqueId);
+	return Mask(mask);
+}
+
 string ResolumeFile::Mask::getUniqueId() {
 	return xml.getAttribute("uniqueId").getValue();
 }
@@ -314,8 +333,28 @@ string ResolumeFile::Mask::getName() {
     return xml.findFirst("./Params/Param[@name='Name']").getAttribute("value").getValue();
 }
 
+void ResolumeFile::Mask::setName(string name) {
+	ResolumeFile::setParam(xml, "Common", "Name", name);
+}
+
 bool ResolumeFile::Mask::getEnabled() {
 	return xml.findFirst("./Params/Param[@name='Enabled']").getAttribute("value").getBoolValue();
+}
+
+void ResolumeFile::Mask::setEnabled(bool enabled) {
+	ResolumeFile::setParam(xml, "Common", "Enabled", enabled);
+}
+
+bool ResolumeFile::Mask::getInverted() {
+	return xml.findFirst("./Params/Param[@name='Invert']").getAttribute("value").getBoolValue();
+}
+
+void ResolumeFile::Mask::setInverted(bool inverted) {
+	ResolumeFile::setParam(xml, "Output", "Invert", inverted);
+}
+
+bool ResolumeFile::Mask::getClosed() {
+	return xml.findFirst("./ShapeObject/Shape/Contour").getAttribute("closed").getBoolValue();
 }
 
 vector<glm::vec2> ResolumeFile::Mask::getPoints() {
@@ -328,4 +367,7 @@ vector<glm::vec2> ResolumeFile::Mask::getPoints() {
         points.push_back(p);
     }
     return points;
+}
+
+void ResolumeFile::Mask::setPoints(const vector<glm::vec2>& points, bool closed) {
 }
