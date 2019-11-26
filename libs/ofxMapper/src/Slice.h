@@ -38,10 +38,12 @@ namespace ofxMapper {
 		// Vertices
 		void setVertices(vector<glm::vec2> & vertices, size_t controlWidth, size_t controlHeight);
 		void createVertices(const ofRectangle & rect);
+		void createVertices(const glm::vec2 & topLeft, const glm::vec2 & topRight, const glm::vec2 & bottomRight, const glm::vec2 & bottomLeft);
 		glm::vec2 * getVertices();
 		size_t getControlWidth();
 		size_t getControlHeight();
 		void subdivide(int cols, int rows);
+		void reset();
 
 		// Draw
 		virtual void draw();

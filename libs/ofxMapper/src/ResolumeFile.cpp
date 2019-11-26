@@ -83,6 +83,7 @@ ResolumeFile::Screen ResolumeFile::addScreen(string uniqueId) {
 	}
 	ofXml scrn = scrns.appendChild("Screen");
 	scrn.setAttribute("uniqueId", uniqueId);
+	screens.push_back(scrn);
 
 	return Screen(scrn);
 }
@@ -110,7 +111,7 @@ ofRectangle ResolumeFile::Screen::getSize() {
 
 void ResolumeFile::Screen::setSize(int width, int height) {
 	ofXml odev;
-	if (!(odev = xml.getChild("OutputDeive"))) {
+	if (!(odev = xml.getChild("OutputDevice"))) {
 		odev = xml.appendChild("OutputDevice");
 	}
 	ofXml virt;
@@ -369,5 +370,24 @@ vector<glm::vec2> ResolumeFile::Mask::getPoints() {
     return points;
 }
 
-void ResolumeFile::Mask::setPoints(const vector<glm::vec2>& points, bool closed) {
+void ResolumeFile::Mask::setPoints(const vector<glm::vec2>& pts, bool closed) {
+	ofXml object;
+	if (!(object = xml.getChild("ShapeObject"))) {
+		object = xml.appendChild("ShapeObject");
+	}
+	ofXml shape;
+	if (!(shape = object.getChild("Shape"))) {
+		shape = object.appendChild("Shape");
+	}
+	ofXml contour;
+	if (!(contour = shape.getChild("Contour"))) {
+		contour = shape.appendChild("Contour");
+	}
+	contour.setAttribute("closed", closed);
+	contour.removeChild("points");
+
+	ofXml points = contour.appendChild("points");
+	for (const glm::vec2 & p : pts) {
+		ResolumeFile::addVertex(points, p);
+	}
 }

@@ -83,9 +83,9 @@ public:
 		void setWarperVertices(size_t controlWidth, size_t controlHeight, glm::vec2 * vertices);
 
 		bool getSoftEdgeEnabled();
-		float getSoftEdgeGamma(float gamma = 1);
-		float getSoftEdgeLuminance(float luminance = 0.5);
-		float getSoftEdgePower(float power = 2);
+		float getSoftEdgeGamma(float gamma);
+		float getSoftEdgeLuminance(float luminance);
+		float getSoftEdgePower(float power);
 		
 	private:
 		ofXml xml;

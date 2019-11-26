@@ -57,30 +57,33 @@ void Slice::setVertices(vector<glm::vec2>& v, size_t controlWidth, size_t contro
 //--------------------------------------------------------------
 void Slice::createVertices(const ofRectangle & rect) {
 
-	/*this->controlWidth = 4;
-	this->controlHeight = 4;
+	createVertices(rect.getTopLeft(), rect.getTopRight(), rect.getBottomRight(), rect.getBottomLeft());
+}
 
-	size_t n = controlWidth * controlHeight;;
-	vertices = shared_ptr<glm::vec2>(new glm::vec2[n]);
-	glm::vec2 * v = vertices.get();*/
-    vertices = shared_ptr<Vertices>(new Vertices(4, 4));
-    glm::vec2 * v = vertices->data;
+//--------------------------------------------------------------
+void ofxMapper::Slice::createVertices(const glm::vec2 & topLeft, const glm::vec2 & topRight, const glm::vec2 & bottomRight, const glm::vec2 & bottomLeft) {
 
-	glm::vec2 v0 = rect.getTopLeft();
-	glm::vec2 v1 = rect.getBottomRight();
+	vertices = shared_ptr<Vertices>(new Vertices(4, 4));
+	glm::vec2 * v = vertices->data;
+
+	glm::vec2 dx0 = topRight - topLeft;
+	glm::vec2 dx1 = bottomRight - bottomLeft;
+	glm::vec2 dy0 = bottomLeft - topLeft;
+	glm::vec2 dy1 = bottomRight - topRight;
 
 	for (size_t y = 0; y < vertices->height; y++) {
+		float dy = y / 3.f;
+		glm::vec2 y0 = glm::mix(topLeft, bottomLeft, dy);
+		glm::vec2 y1 = glm::mix(topRight, bottomRight, dy);
 		for (size_t x = 0; x < vertices->width; x++) {
-			glm::vec2 delta = glm::vec2(x / 3.f, y / 3.f);
-			v[y * vertices->width + x] = glm::mix(v0, v1, delta);
+			float dx = x / 3.f;
+			v[y * vertices->width + x] = glm::mix(y0, y1, dx);
 		}
 	}
 
 	linearWarper.setVertices(vertices);
 	bezierWarper.setVertices(vertices);
 
-	//linearWarper.updateHandles();
-	//bezierWarper.updateHandles();
 	updateHandles();
 }
 
@@ -110,6 +113,12 @@ void Slice::subdivide(int cols, int rows) {
     bezierWarper.setVertices(vertices);
 
     updateHandles();
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Slice::reset() {
+	if (vertices->width > 0 && vertices->height > 0)
+		createVertices(vertices->data[0], vertices->data[vertices->width - 1], vertices->data[vertices->width*vertices->height - 1], vertices->data[vertices->width*(vertices->height - 1)]);
 }
 
 //--------------------------------------------------------------

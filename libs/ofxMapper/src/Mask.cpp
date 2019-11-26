@@ -28,6 +28,48 @@ void ofxMapper::Mask::addPoint(const glm::vec2 & p) {
 	poly[0].addVertex(glm::vec3(h.position, 0));
 }
 
+void ofxMapper::Mask::insertPoint(const glm::vec2 & p) {
+	unsigned int firstIndex = 0;
+	glm::vec3 q = glm::vec3(p, 0);
+	poly[0].getClosestPoint(q, &firstIndex);
+	auto & vertices = poly[0].getVertices();
+
+	DragHandle h;
+	h.position = p;
+	h.selected = true;
+	
+	float beforeDist = std::numeric_limits<float>::max();
+	float afterDist = std::numeric_limits<float>::max();
+
+	if (firstIndex == 0) {
+		glm::vec3 c = getClosestPointUtil(vertices.back(), vertices.front(), q, nullptr);
+		beforeDist = glm::distance(q, c);
+	}
+	if (firstIndex > 0) {
+		glm::vec3 c = getClosestPointUtil(vertices[firstIndex - 1], vertices[firstIndex], q, nullptr);
+		beforeDist = glm::distance(q, c);
+	}
+	if (firstIndex < vertices.size() - 1) {
+		glm::vec3 c = getClosestPointUtil(vertices[firstIndex], vertices[firstIndex + 1], q, nullptr);
+		afterDist = glm::distance(q, c);
+	}
+	if (firstIndex == vertices.size() - 1) {
+		glm::vec3 c = getClosestPointUtil(vertices.back(), vertices.front(), q, nullptr);
+		afterDist = glm::distance(q, c);
+	}
+
+	if (beforeDist < afterDist) {
+		handles.insert(handles.begin() + firstIndex, h);
+		ofLog() << "Before index: " << firstIndex;
+	}
+	else {
+		handles.insert(handles.begin() + firstIndex + 1, h);
+		ofLog() << "After index: " << firstIndex;
+	}
+
+	update();
+}
+
 void ofxMapper::Mask::setPoint(const glm::vec2 & p, int index) {
 	if (index < 0)
 		index = handles.size() - 1;
@@ -46,6 +88,7 @@ void ofxMapper::Mask::removePoint(int index) {
 
 void Mask::setScreenRect(const ofRectangle &rect) {
     this->screenRect = rect;
+	inverted.set(inverted);
 }
 
 void Mask::update() {
@@ -124,7 +167,7 @@ void Mask::closedChanged(bool &) {
 
 void Mask::invertedChanged(bool &) {
     poly[1].clear();
-    if (inverted) {
+    if (inverted && screenRect.getArea() > 0) {
         poly[1].addVertex(screenRect.getTopLeft());
         poly[1].addVertex(screenRect.getTopRight());
         poly[1].addVertex(screenRect.getBottomRight());

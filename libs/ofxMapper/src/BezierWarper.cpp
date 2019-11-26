@@ -55,10 +55,14 @@ void BezierWarper::setVertices(VerticesPtr v) {
 //--------------------------------------------------------------
 VerticesPtr BezierWarper::subdivide(int subdivCols, int subdivRows) {
 
-    int subWidth = (vertices->width-1) * subdivCols + 1;
-    int subHeight = (vertices->height-1) * subdivRows + 1;
+	subdivCols += 1;
+	subdivRows += 1;
+
+	int subWidth = cols * subdivCols * 3 + 1;
+    int subHeight = rows * subdivRows * 3 + 1;
     shared_ptr<Vertices> subvertices = shared_ptr<Vertices>(new Vertices(subWidth, subHeight));
     
+
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {
             BezierPatch & patch = patches[r * cols + c];

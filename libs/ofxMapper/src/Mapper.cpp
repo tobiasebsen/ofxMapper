@@ -290,9 +290,9 @@ bool Mapper::load(string filePath) {
 			slice->softEdgeEnabled = sl.getSoftEdgeEnabled();
 
 			SoftEdge & softEdge = slice->getSoftEdge();
-			softEdge.power = sl.getSoftEdgePower();
-			softEdge.luminance = sl.getSoftEdgeLuminance();
-			softEdge.gamma = sl.getSoftEdgeGamma();
+			softEdge.power = sl.getSoftEdgePower(softEdge.power);
+			softEdge.luminance = sl.getSoftEdgeLuminance(softEdge.luminance);
+			softEdge.gamma = sl.getSoftEdgeGamma(softEdge.gamma);
 
 			slice->setInputRect(inputRect);
 			slice->bezierEnabled = sl.getWarperMode() == "PM_BEZIER";
@@ -313,6 +313,7 @@ bool Mapper::load(string filePath) {
 			MaskPtr mask = screen->addMask(name);
 			mask->uniqueId = msk.getUniqueId();
 			mask->enabled = msk.getEnabled();
+			mask->closed = msk.getClosed();
 			mask->setPoints(points);
 		}
 	}
