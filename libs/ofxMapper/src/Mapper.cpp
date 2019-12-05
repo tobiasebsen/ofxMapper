@@ -317,7 +317,7 @@ bool Mapper::load(string filePath) {
 			mask->setPoints(points);
 		}
 	}
-	compFileName = ofFilePath::getFileName(filePath);
+	compFilePath = filePath;
 
 	return true;
 }
@@ -365,15 +365,19 @@ void ofxMapper::Mapper::save(string filePath) {
 	}
 
 	if (compFile->save(filePath))
-		compFileName = filePath;
+		compFilePath = filePath;
 }
 
 //--------------------------------------------------------------
 void ofxMapper::Mapper::save() {
-	save(compFileName);
+	save(compFilePath);
 }
 
 //--------------------------------------------------------------
 string Mapper::getFileName() const {
-	return compFileName;
+	return ofFilePath::getFileName(compFilePath);
+}
+
+string ofxMapper::Mapper::getFilePath() const {
+	return compFilePath;
 }

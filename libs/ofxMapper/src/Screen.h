@@ -62,8 +62,8 @@ namespace ofxMapper {
 		// Parameters
 		string uniqueId;
 		ofParameter<string> name = { "Name:", "" };
-		ofParameter<int> width = { "Width", 1920, 320, 3840 };
-		ofParameter<int> height = { "Height", 1920, 320, 3840 };
+		ofParameter<int> width = { "Width", 1920, 640, 3840 };
+		ofParameter<int> height = { "Height", 1080, 480, 3840 };
 		ofParameter<float> keystoneH = { "Keystone H", 0, -10, 10 };
 		ofParameter<float> keystoneV = { "Keystone V", 0, -10, 10 };
 		ofParameter<bool> enabled = { "Enabled", true };

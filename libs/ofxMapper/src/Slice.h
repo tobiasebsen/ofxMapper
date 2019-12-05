@@ -85,12 +85,13 @@ namespace ofxMapper {
         // Color correction
         ColorCorrect & getColorCorrect();
 
+	public:
 
 		// Parameters
-		ofParameter<int> inputX = { "X", 0, 0, 1920 };
-		ofParameter<int> inputY = { "Y", 0, 0, 1080 };
-		ofParameter<int> inputWidth = { "Width", 1920, 0, 1920 };
-		ofParameter<int> inputHeight = { "Height", 1080, 0, 1080 };
+		ofParameter<int> inputX = { "X", 0, 0, 3840 };
+		ofParameter<int> inputY = { "Y", 0, 0, 3840 };
+		ofParameter<int> inputWidth = { "Width", 1920, 0, 3840 };
+		ofParameter<int> inputHeight = { "Height", 1080, 0, 3840 };
 		ofParameter<bool> softEdgeEnabled = { "Soft edge", false };
 		ofParameter<bool> dragging = { "Dragging", false };
 		ofParameterGroup inputGroup = { "Slice", name, inputX, inputY, inputWidth, inputHeight, softEdgeEnabled, enabled, remove };
@@ -99,12 +100,12 @@ namespace ofxMapper {
 		ofParameter<bool> colorEnabled = { "Color correction", false };
 		ofParameterGroup warperGroup = { "Warper", name, enabled, editEnabled, bezierEnabled, colorEnabled, softEdgeEnabled };
 
-		void inputRectChanged(int&);
-		void bezierChanged(bool&);
-
 	private:
         friend class Screen;
         Slice(float x, float y, float width, float height);
+
+		void inputRectChanged(int&);
+		void bezierChanged(bool&);
 
 		vector<RectHandle> inputHandles;
 

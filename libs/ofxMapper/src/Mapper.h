@@ -34,6 +34,7 @@ namespace ofxMapper {
 		void save(string filePath);
 		void save();
 		string getFileName() const;
+		string getFilePath() const;
 
 
 		// Composition
@@ -71,7 +72,7 @@ namespace ofxMapper {
 		ofRectangle compRect;
 
 		shared_ptr<ResolumeFile> compFile;
-		string compFileName = "untitled.xml";
+		string compFilePath = "untitled.xml";
 
 		// Frame buffer
 		ofFbo fbo;
