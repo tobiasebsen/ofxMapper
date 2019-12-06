@@ -14,14 +14,17 @@ void Mapper::setup(int width, int height) {
 
 //--------------------------------------------------------------
 void Mapper::begin() {
-	fbo.begin();
+	if (fbo.isAllocated()) {
+		fbo.begin();
+	}
 }
 
 //--------------------------------------------------------------
 void Mapper::end() {
-	fbo.end();
-
-	update(fbo.getTexture());
+	if (fbo.isAllocated()) {
+		fbo.end();
+		update(fbo.getTexture());
+	}
 }
 
 //--------------------------------------------------------------
@@ -114,11 +117,18 @@ ScreenPtr ofxMapper::Mapper::addScreen(int width, int height) {
 }
 
 //--------------------------------------------------------------
-ScreenPtr Mapper::addScreen(string name, int width, int height, bool enabled) {
+ScreenPtr Mapper::addScreen(string name, int width, int height) {
     screens.emplace_back(new Screen(width, height));
     ScreenPtr screen = screens.back();
 	screen->name = name;
-	screen->enabled = enabled;
+	return screen;
+}
+
+//--------------------------------------------------------------
+ScreenPtr Mapper::addScreen(string name, int x, int y, int width, int height) {
+	screens.emplace_back(new Screen(x, y, width, height));
+	ScreenPtr screen = screens.back();
+	screen->name = name;
 	return screen;
 }
 
@@ -378,6 +388,7 @@ string Mapper::getFileName() const {
 	return ofFilePath::getFileName(compFilePath);
 }
 
+//--------------------------------------------------------------
 string ofxMapper::Mapper::getFilePath() const {
 	return compFilePath;
 }

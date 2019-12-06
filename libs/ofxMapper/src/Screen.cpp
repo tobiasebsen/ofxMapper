@@ -4,7 +4,15 @@ using namespace ofxMapper;
 
 //--------------------------------------------------------------
 Screen::Screen(int w, int h) {
+	Screen(0, 0, w, h);
+}
+
+//--------------------------------------------------------------
+Screen::Screen(int x, int y, int w, int h) {
 	uniqueId = ofToString((uint64_t)ofRandom(9999999999999));
+
+	posX = x;
+	posY = y;
 
     width.addListener(this, &Screen::resolutionChanged);
 	height.addListener(this, &Screen::resolutionChanged);
@@ -22,7 +30,7 @@ Screen::~Screen() {
 
 //--------------------------------------------------------------
 ofRectangle Screen::getScreenRect() {
-	return ofRectangle(0, 0, width, height);
+	return ofRectangle(posX, posY, width, height);
 }
 
 //--------------------------------------------------------------

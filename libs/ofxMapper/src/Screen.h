@@ -62,18 +62,21 @@ namespace ofxMapper {
 		// Parameters
 		string uniqueId;
 		ofParameter<string> name = { "Name:", "" };
+		ofParameter<int> posX = { "X", 0, 0, 7680 };
+		ofParameter<int> posY = { "Y", 0, 0, 7680 };
 		ofParameter<int> width = { "Width", 1920, 640, 3840 };
 		ofParameter<int> height = { "Height", 1080, 480, 3840 };
 		ofParameter<float> keystoneH = { "Keystone H", 0, -10, 10 };
 		ofParameter<float> keystoneV = { "Keystone V", 0, -10, 10 };
 		ofParameter<bool> enabled = { "Enabled", true };
 		ofParameter<bool> remove = { "Remove", false };
-		ofParameterGroup group = { "Screen" , name, width, height, enabled, remove };
+		ofParameterGroup group = { "Screen" , name, posX, posY, width, height, enabled, remove };
 
 	private:
 
         friend class Mapper;
-        Screen(int width, int height);
+        Screen(int x, int y, int width, int height);
+		Screen(int width, int height);
 
         void resolutionChanged(int &);
 

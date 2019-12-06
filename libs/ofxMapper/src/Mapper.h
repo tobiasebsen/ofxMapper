@@ -51,7 +51,8 @@ namespace ofxMapper {
 		size_t getNumScreens() const;
 		ScreenPtr getScreen(size_t screenIndex = 0);
 		ScreenPtr addScreen(int width, int height);
-		ScreenPtr addScreen(string name, int width, int height, bool enabled = true);
+		ScreenPtr addScreen(string name, int width, int height);
+		ScreenPtr addScreen(string name, int x, int y, int width, int height);
 		void removeScreen();
 		void clearScreens();
 		void deselectAll();
