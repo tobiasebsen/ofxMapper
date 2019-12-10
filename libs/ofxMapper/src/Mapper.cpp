@@ -20,10 +20,12 @@ void Mapper::begin() {
 }
 
 //--------------------------------------------------------------
-void Mapper::end() {
+void Mapper::end(bool doUpdate) {
 	if (fbo.isAllocated()) {
 		fbo.end();
-		update(fbo.getTexture());
+		if (doUpdate) {
+			update(fbo.getTexture());
+		}
 	}
 }
 
@@ -118,7 +120,14 @@ ScreenPtr ofxMapper::Mapper::addScreen(int width, int height) {
 
 //--------------------------------------------------------------
 ScreenPtr Mapper::addScreen(string name, int width, int height) {
-    screens.emplace_back(new Screen(width, height));
+	int x = 0;
+	int y = 0;
+	if (getNumScreens() > 0) {
+		ofRectangle rect = getScreens().back()->getScreenRect();
+		x = rect.getRight();
+		y = rect.getTop();
+	}
+    screens.emplace_back(new Screen(x, y, width, height));
     ScreenPtr screen = screens.back();
 	screen->name = name;
 	return screen;

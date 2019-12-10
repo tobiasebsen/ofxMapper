@@ -15,7 +15,7 @@ namespace ofxMapper {
 
 		// Begin/end drawing on frame buffer
 		void begin();
-		void end();
+		void end(bool update = true);
 
 		// Update and draw mapped content
 		void update(ofTexture & texture);
