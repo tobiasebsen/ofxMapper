@@ -13,6 +13,7 @@ namespace ofxMapper {
 		// Frame buffer
 
 		ofRectangle getScreenRect();
+		glm::vec2 getScreenPos();
 		void update(ofTexture & inputTexture);
 		const ofFbo & getFbo() const;
 

@@ -34,6 +34,11 @@ ofRectangle Screen::getScreenRect() {
 }
 
 //--------------------------------------------------------------
+glm::vec2 ofxMapper::Screen::getScreenPos() {
+	return glm::vec2(posX, posY);
+}
+
+//--------------------------------------------------------------
 void Screen::update(ofTexture & inputTexture) {
 
 	fbo.begin();
