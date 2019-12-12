@@ -191,6 +191,26 @@ void Mapper::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
+void ofxMapper::Mapper::snapInputHandle(const glm::vec2 & p, float distance) {
+    glm::vec2 q = p;
+    
+    if (abs(q.x) < distance)
+        q.x = 0;
+    if (abs(q.x - compRect.width) < distance)
+        q.x = compRect.width;
+    if (abs(q.y) < distance)
+        q.y = 0;
+    if (abs(q.y - compRect.height) < distance)
+        q.y = compRect.height;
+
+    for (auto & screen : screens) {
+        if (screen->enabled) {
+            screen->snapInputHandle(q, distance);
+        }
+    }
+}
+
+//--------------------------------------------------------------
 void ofxMapper::Mapper::dragInputHandle(const glm::vec2 & delta) {
 	for (auto & screen : screens) {
 		if (screen->enabled) {

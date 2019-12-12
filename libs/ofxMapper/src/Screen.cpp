@@ -154,6 +154,15 @@ bool Screen::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
+void Screen::snapInputHandle(const glm::vec2 & p, float distance) {
+    glm::vec2 q = p;
+
+    for (SlicePtr slice : slices) {
+        slice->setInputHandle(q);
+    }
+}
+
+//--------------------------------------------------------------
 void Screen::dragInputHandle(const glm::vec2 & delta) {
 	for (SlicePtr slice : slices) {
 		slice->dragInputHandle(delta);

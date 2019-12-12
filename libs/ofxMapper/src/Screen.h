@@ -33,6 +33,7 @@ namespace ofxMapper {
 		
 		bool selectSliceInput(const glm::vec2 & p);
 		bool grabInputHandle(const glm::vec2 & p, float radius);
+        void snapInputHandle(const glm::vec2 & p, float distance);
 		void dragInputHandle(const glm::vec2 & delta);
 		void moveInputHandle(const glm::vec2 & delta);
 		void releaseInputHandle();

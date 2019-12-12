@@ -170,6 +170,15 @@ bool ofxMapper::Slice::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
+void ofxMapper::Slice::setInputHandle(const glm::vec2 & delta) {
+    for (auto & h : inputHandles) {
+        if (h.dragging) {
+            setInputHandle(h, delta);
+        }
+    }
+}
+
+//--------------------------------------------------------------
 void ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
 	for (auto & h : inputHandles) {
 		if (h.dragging) {
@@ -191,23 +200,55 @@ bool ofxMapper::Slice::moveInputHandle(const glm::vec2 & delta) {
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & delta) {
+void ofxMapper::Slice::setInputHandle(RectHandle & handle, const glm::vec2 & p) {
+    glm::vec2 q;
+    q.x = roundf(p.x);
+    q.y = roundf(p.y);
+    switch (handle.side) {
+        case RectHandle::SIDE_LEFT:
+            inputWidth.setWithoutEventNotifications(inputWidth - (q.x - inputX));
+            inputX.setWithoutEventNotifications(q.x);
+            break;
+        case RectHandle::SIDE_TOP:
+            inputHeight.setWithoutEventNotifications(inputHeight - (q.y - inputY));
+            inputY.setWithoutEventNotifications(q.y);
+            break;
+        case RectHandle::SIDE_RIGHT:
+            inputWidth.setWithoutEventNotifications(q.x - inputX);
+            break;
+        case RectHandle::SIDE_BOTTOM:
+            inputHeight.setWithoutEventNotifications(q.y - inputY);
+            break;
+    }
+    ofRectangle inputRect = getInputRect();
+    warper->setInputRect(inputRect);
+    updateInputHandles();
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & d) {
+    glm::vec2 delta;
+    delta.x = roundf(d.x);
+    delta.y = roundf(d.y);
 	switch (handle.side) {
 	case RectHandle::SIDE_LEFT:
 		inputX.setWithoutEventNotifications(handle.position.x + delta.x);
-		inputWidth -= delta.x;
+		inputWidth.setWithoutEventNotifications(inputWidth - delta.x);
 		break;
 	case RectHandle::SIDE_TOP:
 		inputY.setWithoutEventNotifications(handle.position.y + delta.y);
-		inputHeight -= delta.y;
+		inputHeight.setWithoutEventNotifications(inputHeight - delta.y);
 		break;
 	case RectHandle::SIDE_RIGHT:
-		inputWidth += delta.x;
+		inputWidth.setWithoutEventNotifications(inputWidth + delta.x);
 		break;
 	case RectHandle::SIDE_BOTTOM:
-		inputHeight += delta.y;
+		inputHeight.setWithoutEventNotifications(inputHeight + delta.y);
 		break;
 	}
+    ofRectangle inputRect = getInputRect();
+    warper->setInputRect(inputRect);
+    updateInputHandles();
 }
 
 //--------------------------------------------------------------

@@ -35,6 +35,8 @@ namespace ofxMapper {
 		vector<RectHandle> & getInputHandles();
 
 		bool grabInputHandle(const glm::vec2 & p, float radius);
+        void setInputHandle(const glm::vec2 & p);
+        void setInputHandle(RectHandle & handle, const glm::vec2 & p);
 		void dragInputHandle(const glm::vec2 & delta);
 		bool moveInputHandle(const glm::vec2 & delta);
 		void moveInputHandle(RectHandle & handle, const glm::vec2 & delta);
