@@ -13,6 +13,7 @@ namespace ofxMapper {
 		// Frame buffer
 
 		ofRectangle getScreenRect();
+		ofRectangle getScreenSize();
 		glm::vec2 getScreenPos();
 		void update(ofTexture & inputTexture);
 		const ofFbo & getFbo() const;
@@ -29,10 +30,13 @@ namespace ofxMapper {
 		SlicePtr addSlice(string name, const ofRectangle & inputRect);
 		SlicePtr addSlice(string name, const ofRectangle & inputRect, const ofRectangle & outputRect);
 		void removeSlice(size_t sliceIndex);
+		
 		bool selectSliceInput(const glm::vec2 & p);
 		bool grabInputHandle(const glm::vec2 & p, float radius);
 		void dragInputHandle(const glm::vec2 & delta);
+		void moveInputHandle(const glm::vec2 & delta);
 		void releaseInputHandle();
+		
 		void deselectSliceWarpers();
 		bool grabSlice(const glm::vec2 & p, float radius);
 		void moveSlice(const glm::vec2 & delta);

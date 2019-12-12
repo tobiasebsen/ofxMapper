@@ -16,6 +16,7 @@ void Mapper::setup(int width, int height) {
 void Mapper::begin() {
 	if (fbo.isAllocated()) {
 		fbo.begin();
+		ofClear(0, 0);
 	}
 }
 
@@ -41,14 +42,11 @@ void Mapper::update(ofTexture & texture) {
 
 //--------------------------------------------------------------
 void Mapper::draw() {
-	ofPushMatrix();
 	for (auto & screen : screens) {
 		if (screen->enabled) {
 			screen->draw();
-			ofTranslate(screen->width, 0);
 		}
 	}
-	ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -84,7 +82,7 @@ void Mapper::drawInputRectsSelected(bool drawDisabled) {
 
 //--------------------------------------------------------------
 void Mapper::setCompSize(size_t width, size_t height) {
-	fbo.allocate(width, height, GL_RGB);
+	fbo.allocate(width, height, GL_RGBA);
 	compRect.set(0, 0, width, height);
 }
 
@@ -202,6 +200,15 @@ void ofxMapper::Mapper::dragInputHandle(const glm::vec2 & delta) {
 }
 
 //--------------------------------------------------------------
+void ofxMapper::Mapper::moveInputHandle(const glm::vec2 & delta) {
+	for (auto & screen : screens) {
+		if (screen->enabled) {
+			screen->moveInputHandle(delta);
+		}
+	}
+}
+
+//--------------------------------------------------------------
 void ofxMapper::Mapper::releaseInputHandle() {
 	for (auto & screen : screens) {
 		if (screen->enabled) {
@@ -260,6 +267,7 @@ void Mapper::drawBlendRects() {
 
 //--------------------------------------------------------------
 void ofxMapper::Mapper::clear() {
+	compFilePath = "untitled.xml";
 	compFile.reset();
 	screens.clear();
 }

@@ -34,6 +34,11 @@ ofRectangle Screen::getScreenRect() {
 }
 
 //--------------------------------------------------------------
+ofRectangle ofxMapper::Screen::getScreenSize() {
+	return ofRectangle(0, 0, width, height);
+}
+
+//--------------------------------------------------------------
 glm::vec2 ofxMapper::Screen::getScreenPos() {
 	return glm::vec2(posX, posY);
 }
@@ -118,7 +123,7 @@ SlicePtr Screen::addSlice(string name, const ofRectangle & inputRect, const ofRe
 
 //--------------------------------------------------------------
 SlicePtr Screen::addSlice(string name, const ofRectangle & inputRect) {
-	return addSlice(name, inputRect, getScreenRect());
+	return addSlice(name, inputRect, ofRectangle(0, 0, width, height));
 }
 
 //--------------------------------------------------------------
@@ -137,7 +142,7 @@ bool Screen::selectSliceInput(const glm::vec2 & p) {
 }
 
 //--------------------------------------------------------------
-bool ofxMapper::Screen::grabInputHandle(const glm::vec2 & p, float radius) {
+bool Screen::grabInputHandle(const glm::vec2 & p, float radius) {
 	bool selected = false;
 	for (SlicePtr slice : slices) {
 		if (slice->grabInputHandle(p, radius)) {
@@ -149,14 +154,23 @@ bool ofxMapper::Screen::grabInputHandle(const glm::vec2 & p, float radius) {
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Screen::dragInputHandle(const glm::vec2 & delta) {
+void Screen::dragInputHandle(const glm::vec2 & delta) {
 	for (SlicePtr slice : slices) {
 		slice->dragInputHandle(delta);
 	}
 }
 
 //--------------------------------------------------------------
-void ofxMapper::Screen::releaseInputHandle() {
+void Screen::moveInputHandle(const glm::vec2 & delta) {
+	for (SlicePtr slice : slices) {
+		if (slice->selected && !slice->moveInputHandle(delta)) {
+			slice->moveInput(delta);
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void Screen::releaseInputHandle() {
 	for (SlicePtr slice : slices) {
 		slice->releaseHandle();
 	}

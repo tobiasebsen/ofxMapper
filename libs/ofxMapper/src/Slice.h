@@ -27,13 +27,18 @@ namespace ofxMapper {
 		void setInputRect(const ofRectangle & inputRect);
 		ofRectangle getInputRect();
 		void drawInputRect();
+
+		bool selectInput(const glm::vec2 & p);
+		void moveInput(const glm::vec2 & delta);
+
 		void updateInputHandles();
 		vector<RectHandle> & getInputHandles();
+
 		bool grabInputHandle(const glm::vec2 & p, float radius);
 		void dragInputHandle(const glm::vec2 & delta);
+		bool moveInputHandle(const glm::vec2 & delta);
 		void moveInputHandle(RectHandle & handle, const glm::vec2 & delta);
 		void releaseInputHandle();
-		bool selectInput(const glm::vec2 & p);
 
 		// Vertices
 		void setVertices(vector<glm::vec2> & vertices, size_t controlWidth, size_t controlHeight);

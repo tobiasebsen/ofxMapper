@@ -179,6 +179,18 @@ void ofxMapper::Slice::dragInputHandle(const glm::vec2 & delta) {
 }
 
 //--------------------------------------------------------------
+bool ofxMapper::Slice::moveInputHandle(const glm::vec2 & delta) {
+	bool moved = false;
+	for (auto & h : inputHandles) {
+		if (h.selected) {
+			moveInputHandle(h, delta);
+			moved = true;
+		}
+	}
+	return moved;
+}
+
+//--------------------------------------------------------------
 void ofxMapper::Slice::moveInputHandle(RectHandle & handle, const glm::vec2 & delta) {
 	switch (handle.side) {
 	case RectHandle::SIDE_LEFT:
@@ -235,6 +247,12 @@ void Slice::drawOutline() {
 bool Slice::selectInput(const glm::vec2 & p) {
 	selected = getInputRect().inside(ofPoint(p));
 	return selected;
+}
+
+//--------------------------------------------------------------
+void ofxMapper::Slice::moveInput(const glm::vec2 & delta) {
+	inputX.setWithoutEventNotifications(inputX + delta.x);
+	inputY.set(inputY + delta.y); // trigger event
 }
 
 //--------------------------------------------------------------
