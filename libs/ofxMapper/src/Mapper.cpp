@@ -160,7 +160,7 @@ void Mapper::clearScreens() {
 //--------------------------------------------------------------
 void Mapper::deselectAll() {
     for (ScreenPtr screen : screens) {
-        screen->deselectSliceWarpers();
+        screen->deselectSlices();
         screen->deselectMasks();
     }
 }
@@ -169,7 +169,7 @@ void Mapper::deselectAll() {
 void Mapper::deselectAllExcept(ScreenPtr except) {
     for (ScreenPtr screen : screens) {
         if (screen != except) {
-            screen->deselectSliceWarpers();
+            screen->deselectSlices();
             screen->deselectMasks();
         }
     }
@@ -260,7 +260,7 @@ void Mapper::updateBlendRects() {
 
 						if (slice1->softEdgeEnabled && slice2->softEdgeEnabled) {
 							ofRectangle blendRect = inputRect1.getIntersection(inputRect2);
-							if (!blendRect.isEmpty() && blendRect.getArea() < inputRect1.getArea() / 2.f) {
+							if (!blendRect.isEmpty() && blendRect.getArea() < inputRect1.getArea() * 0.9f) {
 								slice1->addBlendRect(blendRect);
 							}
 						}

@@ -132,6 +132,13 @@ void Screen::removeSlice(size_t sliceIndex) {
 }
 
 //--------------------------------------------------------------
+void Screen::deselectSlices() {
+	for (SlicePtr slice : slices) {
+		slice->selected = false;
+	}
+}
+
+//--------------------------------------------------------------
 bool Screen::selectSliceInput(const glm::vec2 & p) {
 	bool selection = false;
 	for (SlicePtr slice : slices) {
@@ -183,13 +190,6 @@ void Screen::releaseInputHandle() {
 	for (SlicePtr slice : slices) {
 		slice->releaseHandle();
 	}
-}
-
-//--------------------------------------------------------------
-void Screen::deselectSliceWarpers() {
-    for (SlicePtr slice : slices) {
-        slice->selected = false;
-    }
 }
 
 //--------------------------------------------------------------

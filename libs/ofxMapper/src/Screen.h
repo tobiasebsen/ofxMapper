@@ -31,6 +31,7 @@ namespace ofxMapper {
 		SlicePtr addSlice(string name, const ofRectangle & inputRect, const ofRectangle & outputRect);
 		void removeSlice(size_t sliceIndex);
 		
+		void deselectSlices();
 		bool selectSliceInput(const glm::vec2 & p);
 		bool grabInputHandle(const glm::vec2 & p, float radius);
         void snapInputHandle(const glm::vec2 & p, float distance);
@@ -38,7 +39,6 @@ namespace ofxMapper {
 		void moveInputHandle(const glm::vec2 & delta);
 		void releaseInputHandle();
 		
-		void deselectSliceWarpers();
 		bool grabSlice(const glm::vec2 & p, float radius);
 		void moveSlice(const glm::vec2 & delta);
 		void dragSlice(const glm::vec2 & delta);
@@ -70,8 +70,8 @@ namespace ofxMapper {
 		ofParameter<string> name = { "Name:", "" };
 		ofParameter<int> posX = { "X", 0, 0, 7680 };
 		ofParameter<int> posY = { "Y", 0, 0, 7680 };
-		ofParameter<int> width = { "Width", 1920, 640, 3840 };
-		ofParameter<int> height = { "Height", 1080, 480, 3840 };
+		ofParameter<int> width = { "Width", 1920, 64, 3840 };
+		ofParameter<int> height = { "Height", 1080, 48, 3840 };
 		ofParameter<float> keystoneH = { "Keystone H", 0, -10, 10 };
 		ofParameter<float> keystoneV = { "Keystone V", 0, -10, 10 };
 		ofParameter<bool> enabled = { "Enabled", true };

@@ -36,7 +36,7 @@ vec4 softEdge(vec4 sample, vec2 uv) {
 		f = 1.0 - (1.0 - a) * pow(2.0 * (1.0 - x), p);
 
 	// Apply blend function brightness
-	sample.rgb = sample.rgb * pow(f, 1.0/gamma);
+	sample.rgb = sample.rgb * pow(f, gamma);
 
 	return sample;
 }
@@ -66,7 +66,7 @@ void SoftEdge::setUniforms(const ofShader & shader, const ofRectangle & inputRec
 	shader.setUniform1f("edgeRight", edgeRight);
 	shader.setUniform1f("p", power);
 	shader.setUniform1f("a", luminance);
-	shader.setUniform1f("gamma", gamma);
+	shader.setUniform1f("gamma", 1.f / gamma);
 	shader.setUniform1f("black", 0);
 	shader.setUniform3f("gain", 1.f, 1.0f, 1.f);
 }
