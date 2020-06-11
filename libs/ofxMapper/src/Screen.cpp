@@ -16,6 +16,8 @@ Screen::Screen(int x, int y, int w, int h) {
 
     width.addListener(this, &Screen::resolutionChanged);
 	height.addListener(this, &Screen::resolutionChanged);
+	samples.setMax(ofFbo::maxSamples());
+	samples.addListener(this, &Screen::resolutionChanged);
 
     width.setWithoutEventNotifications(w);
     height.set(h);
@@ -391,7 +393,7 @@ void Screen::resolutionChanged(int &) {
 	if (width <= 0 || height <= 0)
 		return;
 
-	fbo.allocate(width, height, GL_RGB);
+	fbo.allocate(width, height, GL_RGB, samples);
 	fbo.begin();
 	ofClear(ofColor::black);
 	fbo.end();

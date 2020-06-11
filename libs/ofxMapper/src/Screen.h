@@ -72,11 +72,12 @@ namespace ofxMapper {
 		ofParameter<int> posY = { "Y", 0, 0, 7680 };
 		ofParameter<int> width = { "Width", 1920, 64, 3840 };
 		ofParameter<int> height = { "Height", 1080, 48, 3840 };
+		ofParameter<int> samples = { "Samples", 0, 0, 16 };
 		ofParameter<float> keystoneH = { "Keystone H", 0, -10, 10 };
 		ofParameter<float> keystoneV = { "Keystone V", 0, -10, 10 };
 		ofParameter<bool> enabled = { "Enabled", true };
 		ofParameter<bool> remove = { "Remove", false };
-		ofParameterGroup group = { "Screen" , name, posX, posY, width, height, enabled, remove };
+		ofParameterGroup group = { "Screen" , name, posX, posY, width, height, samples, enabled, remove };
 
 	private:
 
