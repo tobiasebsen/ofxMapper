@@ -25,6 +25,7 @@ namespace ofxMapper {
 		vector<SlicePtr> & getSlices();
 		size_t getNumSlices() const;
 		SlicePtr getSlice(size_t sliceIndex);
+		SlicePtr getSlice(string uniqueId);
 		SlicePtr addSlice(float width, float height);
         SlicePtr addSlice(float x, float y, float width, float height);
 		SlicePtr addSlice(string name, const ofRectangle & inputRect);
@@ -48,6 +49,7 @@ namespace ofxMapper {
 		vector<MaskPtr> & getMasks();
 		size_t getNumMasks() const;
 		MaskPtr getMask(size_t maskIndex);
+		MaskPtr getMask(string uniqueId);
 		MaskPtr addMask(string name);
 		void removeMaskSelected();
 		void deselectMasks();

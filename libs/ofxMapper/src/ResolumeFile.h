@@ -25,6 +25,7 @@ public:
 	Screen getScreen(int screenIndex);
 	Screen getScreen(string uniqueId);
 	Screen addScreen(string uniqueId);
+	void removeScreen(string uniqueId);
 
 	class Screen {
 	public:
@@ -47,12 +48,14 @@ public:
 		Slice getSlice(int sliceIndex);
 		Slice getSlice(string uniqueId);
 		Slice addSlice(string uniqueId);
+		void removeSlice(string uniqueId);
 
         int loadMasks();
 		int getNumMasks();
         Mask getMask(int maskIndex);
 		Mask getMask(string uniqueId);
 		Mask addMask(string uniqueId);
+		void removeMask(string uniqueId);
 
     private:
 		ofXml xml;

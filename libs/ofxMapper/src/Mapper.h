@@ -50,10 +50,12 @@ namespace ofxMapper {
 		vector<ScreenPtr> & getScreens();
 		size_t getNumScreens() const;
 		ScreenPtr getScreen(size_t screenIndex = 0);
+		ScreenPtr getScreen(string uniqueId);
 		ScreenPtr addScreen(int width, int height);
 		ScreenPtr addScreen(string name, int width, int height);
 		ScreenPtr addScreen(string name, int x, int y, int width, int height);
 		void removeScreen();
+		void removeScreen(ScreenPtr screen);
 		void clearScreens();
 		void deselectAll();
 		void deselectAllExcept(ScreenPtr screen);

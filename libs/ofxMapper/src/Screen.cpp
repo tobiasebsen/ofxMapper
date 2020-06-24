@@ -105,6 +105,15 @@ SlicePtr Screen::getSlice(size_t sliceIndex) {
 }
 
 //--------------------------------------------------------------
+SlicePtr Screen::getSlice(string uniqueId) {
+	for (SlicePtr slice: slices) {
+		if (slice->uniqueId == uniqueId)
+			return slice;
+	}
+	return NULL;
+}
+
+//--------------------------------------------------------------
 SlicePtr Screen::addSlice(float width, float height) {
 	return addSlice(0, 0, width, height);
 }
@@ -207,6 +216,15 @@ size_t Screen::getNumMasks() const {
 //--------------------------------------------------------------
 MaskPtr Screen::getMask(size_t maskIndex) {
     return masks[maskIndex];
+}
+
+//--------------------------------------------------------------
+MaskPtr Screen::getMask(string uniqueId) {
+	for (MaskPtr mask : masks) {
+		if (mask->uniqueId == uniqueId)
+			return mask;
+	}
+	return NULL;
 }
 
 //--------------------------------------------------------------

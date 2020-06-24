@@ -112,6 +112,15 @@ ScreenPtr Mapper::getScreen(size_t screenIndex) {
 }
 
 //--------------------------------------------------------------
+ScreenPtr Mapper::getScreen(string uniqueId) {
+	for (ScreenPtr screen : screens) {
+		if (screen->uniqueId == uniqueId)
+			return screen;
+	}
+	return NULL;
+}
+
+//--------------------------------------------------------------
 ScreenPtr ofxMapper::Mapper::addScreen(int width, int height) {
 	return addScreen("Screen " + ofToString(screens.size()+1), width, height);
 }
@@ -144,6 +153,19 @@ void Mapper::removeScreen() {
 	for (auto it = screens.begin(); it != screens.end();) {
 		auto p = it[0];
 		if (p->remove) {
+			it = screens.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void Mapper::removeScreen(ScreenPtr screen) {
+	for (auto it = screens.begin(); it != screens.end();) {
+		auto p = it[0];
+		if (p == screen) {
 			it = screens.erase(it);
 		}
 		else {
@@ -380,10 +402,33 @@ void ofxMapper::Mapper::save(string filePath) {
 
 	compFile->setCompositionSize(compRect.width, compRect.height);
 
+	// Remove deleted screens
+	int nb_screens = compFile->loadScreens();
+	for (int i = 0; i < nb_screens; i++) {
+		ResolumeFile::Screen scr = compFile->getScreen(i);
+		string uniqueId = scr.getUniqueId();
+		if (getScreen(uniqueId) == NULL) {
+			compFile->removeScreen(uniqueId);
+		}
+	}
+	compFile->loadScreens();
+
+
 	for (auto & screen : screens) {
 		ResolumeFile::Screen scr = compFile->getScreen(screen->uniqueId);
 		scr.setName(screen->name);
 		scr.setEnabled(screen->enabled);
+
+		// Remove deleted slices
+		int nb_slices = scr.loadSlices();
+		for (int i = 0; i < nb_slices; i++) {
+			ResolumeFile::Slice slc = scr.getSlice(i);
+			string uniqueId = slc.getUniqueId();
+			if (screen->getSlice(uniqueId) == NULL) {
+				scr.removeSlice(uniqueId);
+			}
+		}
+		scr.loadSlices();
 
 		for (auto & slice : screen->getSlices()) {
 			ResolumeFile::Slice slc = scr.getSlice(slice->uniqueId);
@@ -394,6 +439,17 @@ void ofxMapper::Mapper::save(string filePath) {
 
 			slc.setWarperVertices(slice->getControlWidth(), slice->getControlHeight(), slice->getVertices());
 		}
+
+		// Remove deleted masks
+		int nb_masks = scr.loadMasks();
+		for (int i = 0; i < nb_masks; i++) {
+			ResolumeFile::Mask msk = scr.getMask(i);
+			string uniqueId = msk.getUniqueId();
+			if (screen->getMask(uniqueId) == NULL) {
+				scr.removeMask(uniqueId);
+			}
+		}
+		scr.loadMasks();
 
 		for (auto & mask : screen->getMasks()) {
 			ResolumeFile::Mask msk = scr.getMask(mask->uniqueId);

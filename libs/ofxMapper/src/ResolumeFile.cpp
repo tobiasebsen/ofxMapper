@@ -88,6 +88,22 @@ ResolumeFile::Screen ResolumeFile::addScreen(string uniqueId) {
 	return Screen(scrn);
 }
 
+void ResolumeFile::removeScreen(string uniqueId) {
+	ofXml screen = xml.findFirst("//Screen[@uniqueId='" + uniqueId + "']");
+	if (!screen)
+		return;
+
+	ofXml screenSetup;
+	if (!(screenSetup = state.getChild("ScreenSetup")))
+		return;
+
+	ofXml scrns;
+	if (!(scrns = screenSetup.getChild("screens")))
+		return;
+
+	scrns.removeChild(screen);
+}
+
 string ResolumeFile::Screen::getUniqueId() {
 	return xml.getAttribute("uniqueId").getValue();
 }
@@ -167,6 +183,18 @@ ResolumeFile::Slice ResolumeFile::Screen::addSlice(string uniqueId) {
 	ofXml slice = layers.appendChild("Slice");
 	slice.setAttribute("uniqueId", uniqueId);
 	return Slice(slice);
+}
+
+void ResolumeFile::Screen::removeSlice(string uniqueId) {
+	ofXml slice = xml.findFirst("./layers/Slice[@uniqueId='" + uniqueId + "']");
+	if (!slice)
+		return;
+
+	ofXml layers;
+	if (!(layers = xml.getChild("layers")))
+		return;
+
+	layers.removeChild(slice);
 }
 
 string ResolumeFile::Slice::getUniqueId() {
@@ -327,6 +355,18 @@ ResolumeFile::Mask ResolumeFile::Screen::addMask(string uniqueId) {
 	ofXml mask = layers.appendChild("Mask");
 	mask.setAttribute("uniqueId", uniqueId);
 	return Mask(mask);
+}
+
+void ResolumeFile::Screen::removeMask(string uniqueId) {
+	ofXml mask = xml.findFirst("./layers/Mask[@uniqueId='" + uniqueId + "']");
+	if (!mask)
+		return;
+
+	ofXml layers;
+	if (!(layers = xml.getChild("layers")))
+		return;
+
+	layers.removeChild(mask);
 }
 
 string ResolumeFile::Mask::getUniqueId() {
