@@ -103,9 +103,12 @@ void ResolumeFile::Screen::setName(string name) {
 
 ofRectangle ResolumeFile::Screen::getSize() {
 	ofRectangle r;
-	ofXml params = xml.findFirst("./OutputDevice/*//Params");
-	r.width = params.findFirst("./ParamRange[@name='Width']").getAttribute("value").getIntValue();
-	r.height = params.findFirst("./ParamRange[@name='Height']").getAttribute("value").getIntValue();
+	ofXml odev = xml.getChild("OutputDevice").getFirstChild();
+	r.width = odev.getAttribute("width").getIntValue();
+	r.height = odev.getAttribute("height").getIntValue();
+	//ofXml params = xml.findFirst("./OutputDevice/*//Params");
+	//r.width = params.findFirst("./ParamRange[@name='Width']").getAttribute("value").getIntValue();
+	//r.height = params.findFirst("./ParamRange[@name='Height']").getAttribute("value").getIntValue();
 	return r;
 }
 
